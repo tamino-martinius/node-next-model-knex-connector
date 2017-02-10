@@ -228,6 +228,7 @@ describe('NextModelKnexConnector', function() {
               return $subject.then(rows => expect(rows).to.eql([user1]));
             });
           });
+
           context('when query with $notBetween', function() {
             def('userScope', () => ({
               $notBetween: {
