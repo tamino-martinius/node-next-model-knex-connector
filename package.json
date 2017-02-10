@@ -8,20 +8,14 @@
     "type": "git",
     "url": "https://github.com/tamino-martinius/node-next-model-knex-connector.git"
   },
-  "main": "./lib",
+  "main": "index.js",
+  "files": [
+    "index.js"
+  ],
   "watch": {
-    "srclint": {
+    "lint": {
       "patterns": [
-        "src"
-      ],
-      "extensions": [
-        "js"
-      ],
-      "inherit": true
-    },
-    "testlint": {
-      "patterns": [
-        "test"
+        "."
       ],
       "extensions": [
         "js"
@@ -30,8 +24,7 @@
     },
     "test": {
       "patterns": [
-        "test",
-        "lib"
+        "."
       ],
       "extensions": [
         "js"
@@ -40,8 +33,7 @@
     }
   },
   "scripts": {
-    "srclint": "node node_modules/eslint/bin/eslint.js ./src || true",
-    "testlint": "node node_modules/eslint/bin/eslint.js ./test || true",
+    "lint": "node node_modules/eslint/bin/eslint.js . || true",
     "test": "node node_modules/mocha/bin/mocha test -u bdd-lazy-var/rspec --reporter progress",
     "watch": "npm-watch"
   },
@@ -51,12 +43,17 @@
     "expect.js": "^0.3.1",
     "mocha": "^3.0.2",
     "npm-watch": "^0.1.6",
+    "sinon": "^1.17.7",
+    "sqlite3": "^3.1.8",
+    "next-model": "git://github.com/tamino-martinius/node-next-model.git#9f27a4c"
+  },
+  "peerDependencies": {
+    "pg": "^6.1.2",
     "sqlite3": "^3.1.8"
   },
   "dependencies": {
-    "inflection": "^1.10.0",
-    "knex": "^0.12.6",
     "lodash": "^4.12.0",
-    "pg": "^6.1.2"
+    "inflection": "^1.10.0",
+    "knex": "^0.12.6"
   }
 }
