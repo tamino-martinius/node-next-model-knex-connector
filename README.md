@@ -19,6 +19,7 @@ Supports:
 * CI/Tests are just set up for sqlite - others should be tested too
 * Add more **examples**
 * Add **exists** and **raw** queries
+* Add **join** and **subqueries**
 * There are already some **tests**, but not every test case is covered.
 
 ## TOC

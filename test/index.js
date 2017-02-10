@@ -1,6 +1,6 @@
 'use strict';
 
-const NextModelKnexConnector = require('../lib');
+const NextModelKnexConnector = require('..');
 const NextModel = require('next-model');
 const expect = require('expect.js');
 
@@ -21,6 +21,7 @@ def('User', () => class User extends $BaseModel {
     return {
       id: { type: $identifierType },
       name: { type: 'string' },
+      age: { type: 'integer' },
     };
   }
 
@@ -51,11 +52,15 @@ const seedTable = function() {
   .then(() => $User.createTable())
 };
 
+def('userAttrs1', () => ({ name: 'foo', age: 18 }));
+def('userAttrs2', () => ({ name: 'foo', age: 21 }));
+def('userAttrs3', () => ({ name: 'bar', age: 21 }));
+
 const seedDb = function() {
   return Promise.resolve()
-  .then(() => $User.create({ name: 'foo' })).then(data => (user1 = data))
-  .then(() => $User.create({ name: 'bar' })).then(data => (user2 = data))
-  .then(() => $User.create({ name: 'baz' })).then(data => (user3 = data));
+  .then(() => $User.create($userAttrs1)).then(data => (user1 = data))
+  .then(() => $User.create($userAttrs2)).then(data => (user2 = data))
+  .then(() => $User.create($userAttrs3)).then(data => (user3 = data));
 };
 
 describe('NextModelKnexConnector', function() {
@@ -73,6 +78,170 @@ describe('NextModelKnexConnector', function() {
 
   context('with seeded table', function() {
     beforeEach(seedTable);
+
+    describe('.query', function() {
+      subject(() => $connector.all($User));
+
+      it('returns empty array', function() {
+        return $subject.then(rows => expect(rows).to.eql([]));
+      });
+
+      context('when seeded data is present', function() {
+        beforeEach(seedDb);
+
+        it('returns all rows of model', function() {
+          return $subject.then(rows => expect(rows).to.eql([user1, user2, user3]));
+        });
+
+        context('when results are limited', function() {
+          def('User', () => $User.limit(2));
+
+          it('limits rows', function() {
+            return $subject.then(rows => expect(rows).to.eql([user1, user2]));
+          });
+        });
+
+        context('when results are skipped', function() {
+          def('User', () => $User.skip(2));
+
+          it('skips rows', function() {
+            return $subject.then(rows => expect(rows).to.eql([user3]));
+          });
+        });
+
+        context('when results are scoped', function() {
+          def('userScope', () => ({ name: 'foo' }));
+
+          it('filters rows', function() {
+            return $subject.then(rows => expect(rows).to.eql([user1, user2]));
+          });
+
+          context('when query with $and', function() {
+            def('userScope', () => ({
+              $and: [{ name: 'foo' }, { age: 21 }],
+            }));
+
+            it('filters rows', function() {
+              return $subject.then(rows => expect(rows).to.eql([user2]));
+            });
+          });
+
+          context('when query with $or', function() {
+            def('userScope', () => ({
+              $or: [{ name: 'foo', age: 21 }, { name: 'foo', age: 18 }],
+            }));
+
+            it('filters rows', function() {
+              return $subject.then(rows => expect(rows).to.eql([user1, user2]));
+            });
+          });
+
+          context('when query with $or and $and', function() {
+            def('userScope', () => ({
+              $or: [
+                { $and: [{ name: 'foo' }, { age: 18 }] },
+                { $and: [{ name: 'foo' }, { age: 21 }] },
+              ],
+            }));
+
+            it('filters rows', function() {
+              return $subject.then(rows => expect(rows).to.eql([user1, user2]));
+            });
+          });
+
+          context('when query with $not', function() {
+            def('userScope', () => ({
+              $not: { name: 'foo' },
+            }));
+
+            it('filters rows', function() {
+              return $subject.then(rows => expect(rows).to.eql([user3]));
+            });
+          });
+
+          context('when query with $not and $and', function() {
+            def('userScope', () => ({
+              $not: { $or: [
+                { $and: [{ name: 'foo' }, { age: 18 }] },
+                { $and: [{ name: 'foo' }, { age: 21 }] },
+              ]},
+            }));
+
+            it('filters rows', function() {
+              return $subject.then(rows => expect(rows).to.eql([user3]));
+            });
+          });
+
+          context('when query with $null', function() {
+            def('userScope', () => ({
+              $null: 'name',
+            }));
+
+            it('filters rows', function() {
+              return $subject.then(rows => expect(rows).to.eql([]));
+            });
+          });
+
+          context('when query with $notNull', function() {
+            def('userScope', () => ({
+              $notNull: 'name',
+            }));
+
+            it('filters rows', function() {
+              return $subject.then(rows => expect(rows).to.eql([user1, user2, user3]));
+            });
+          });
+
+          context('when query with $in', function() {
+            def('userScope', () => ({
+              $in: {
+                age: [15, 16, 17, 18],
+              },
+            }));
+
+            it('filters rows', function() {
+              return $subject.then(rows => expect(rows).to.eql([user1]));
+            });
+          });
+
+          context('when query with multiple $in', function() {
+            def('userScope', () => ({
+              $in: {
+                age: [19, 20, 21],
+                name: ['foo', 'baz'],
+              },
+            }));
+
+            it('filters rows', function() {
+              return $subject.then(rows => expect(rows).to.eql([user2]));
+            });
+          });
+
+          context('when query with $between', function() {
+            def('userScope', () => ({
+              $between: {
+                age: [15, 20],
+              },
+            }));
+
+            it('filters rows', function() {
+              return $subject.then(rows => expect(rows).to.eql([user1]));
+            });
+          });
+          context('when query with $notBetween', function() {
+            def('userScope', () => ({
+              $notBetween: {
+                age: [15, 20],
+              },
+            }));
+
+            it('filters rows', function() {
+              return $subject.then(rows => expect(rows).to.eql([user2, user3]));
+            });
+          });
+        });
+      });
+    });
 
     describe('.all', function() {
       subject(() => $connector.all($User));
@@ -108,7 +277,7 @@ describe('NextModelKnexConnector', function() {
           def('userScope', () => ({ name: 'foo' }));
 
           it('filters rows', function() {
-            return $subject.then(rows => expect(rows).to.eql([user1]));
+            return $subject.then(rows => expect(rows).to.eql([user1, user2]));
           });
         });
 
@@ -156,7 +325,7 @@ describe('NextModelKnexConnector', function() {
           def('userScope', () => ({ name: 'bar' }));
 
           it('filters rows', function() {
-            return $subject.then(rows => expect(rows).to.eql(user2));
+            return $subject.then(rows => expect(rows).to.eql(user3));
           });
         });
 
@@ -216,7 +385,7 @@ describe('NextModelKnexConnector', function() {
           });
 
           context('when results are scoped', function() {
-            def('userScope', () => ({ name: 'bar' }));
+            def('userScope', () => ({ name: 'foo' }));
 
             it('filters rows', function() {
               return $subject.then(rows => expect(rows).to.eql(user2));

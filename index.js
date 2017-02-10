@@ -8,7 +8,6 @@ const {
 } = require('inflection');
 
 const {
-  capitalize,
   filter,
   first,
   forEach,
@@ -18,6 +17,7 @@ const {
   keys,
   omit,
   startsWith,
+  upperFirst,
   values,
 } = require('lodash');
 
@@ -34,19 +34,19 @@ module.exports = class NextModelKnexConnector {
   }
 
   all(Klass) {
-    const query = this._order(Klass, this.query(Klass));
+    const query = this._selectQuery(Klass);
     return query;
   }
 
   first(Klass) {
-    const query = this._order(Klass, this.query(Klass));
+    const query = this._selectQuery(Klass);
     return query.limit(1).then(arr => (arr && arr[0]));
   }
 
   last(Klass) {
     if (Klass._limit || Klass._skip) throw new Error('`last` is not supportet in combination with `skip` or `limit`');
     if (!Klass.defaultOrder) throw new Error('`last` only works if order is present');
-    const query = this._reverse(Klass, this.query(Klass));
+    const query = this._selectQuery(Klass, true);
     return query.limit(1).then(arr => (arr && arr[0]));
   }
 
@@ -118,11 +118,16 @@ module.exports = class NextModelKnexConnector {
     this._buildQuery(query, Klass.defaultScope);
     if (Klass._skip) query = query.offset(Klass._skip);
     if (Klass._limit) query = query.limit(Klass._limit);
-    // console.log(query.toString());
     return query;
   }
 
   // Private functions
+
+  _selectQuery(Klass, reverse = false) {
+    let query = this.query(Klass);
+    query = reverse ? this._reverse(Klass, query) : this._order(Klass, query);
+    return query.select(Klass.tableName + '.*');
+  }
 
   _buildQuery(currentQuery, scope, queryType = 'where', column = null) {
     if (isEmpty(scope)) return currentQuery;
@@ -146,13 +151,13 @@ module.exports = class NextModelKnexConnector {
               });
               break;
             }
-            case /^(not|Null|notNull)$/.test(key): {
-              const subQueryType = 'where' + capitalize(key);
+            case /^(not|null|notNull)$/.test(key): {
+              const subQueryType = 'where' + upperFirst(key);
               connector._buildQuery(query, scope[specialKey], subQueryType);
               break;
             }
             case /^(in|notIn|between|notBetween)$/.test(key): {
-              const subQueryType = 'where' + capitalize(key);
+              const subQueryType = 'where' + upperFirst(key);
               forEach(scope[specialKey], (value, key) => {
                 connector._buildQuery(query, value, subQueryType, key);
               });
