@@ -147,7 +147,11 @@ const Address = class Address extends BaseModel {
 
 ## Build Queries
 
+This connector uses Knex to query SQL databases, but the query syntax is different from the Knex documentation. Samples of possible queries are listed below.
+
 ### Where
+
+An object passed as `where` clause will query for object property and value.
 
 ~~~js
 User.where({ name: 'foo' });
@@ -156,12 +160,16 @@ User.where({ name: 'foo' });
 select "users".* from "users" where ("name" = 'foo')
 ~~~
 
+If the Object has multiple properties the properties are connected with `and`.
+
 ~~~js
 User.where({ name: 'foo', age: 18 });
 ~~~
 ~~~sql
 select "users".* from "users" where ("name" = 'foo' and "age" = 18)
 ~~~
+
+An `where` query can be connected with another `where` or an `orWhere`. A second query will encapsulate the query on the topmost layer.
 
 ~~~js
 User.where({ name: 'foo', age: 18 }).orWhere({ name: 'bar' });
@@ -171,6 +179,8 @@ select "users".* from "users" where (("name" = 'foo' and "age" = 18) or ("name" 
 ~~~
 
 ### And
+
+Special properties are starting with an `$` sign. The `$and` property connects all values which are passed as `Array` with an SQL `and` operator.
 
 ~~~js
 User.where({ $and: [
@@ -191,6 +201,8 @@ User.where({ $and: [
 select "users".* from "users" where (("name" = 'foo') and ("age" = 18))
 ~~~
 
+The special properties can also chained with other `where` queries.
+
 ~~~js
 User.where({ $and: [
   { name: 'foo' },
@@ -205,6 +217,8 @@ select "users".* from "users" where ((("name" = 'foo') and ("age" = 18)) or (("n
 ~~~
 
 ### Or
+
+The `$or` property works similar to the `$and` property and connects all values with `or`.
 
 ~~~js
 User.where({ $or: [
@@ -240,6 +254,8 @@ select "users".* from "users" where ((("name" = 'foo') or ("age" = 18)) and (("n
 
 ### Not
 
+The child object of an `$not` property will be inverted.
+
 ~~~js
 User.where({ $not: {
   name: 'foo'
@@ -274,6 +290,8 @@ select "users".* from "users" where ((not ("name" = 'foo' and "age" = 18)) and (
 
 ### Nesting
 
+The `$and`, `$or` and `$not` properties can be nested as deeply as needed.
+
 ~~~js
 User.where({ $not: {
   $or: [
@@ -303,6 +321,8 @@ select "users".* from "users" where (not (("name" = 'foo') and (("age" = 18) or 
 
 ### Null
 
+The `$null` property checks for unset columns and takes the column name as value.
+
 ~~~js
 User.where({ $null: 'name' });
 ~~~
@@ -311,6 +331,8 @@ select "users".* from "users" where ("name" is null)
 ~~~
 
 ### NotNull
+
+The `$notNull` property checks if an column is set and takes the column name as value.
 
 ~~~js
 User.where({ $notNull: 'name' });
@@ -321,6 +343,8 @@ select "users".* from "users" where ("name" is not null)
 
 ### In
 
+The `$in` property needs an object as value with the column name as key and the `Array` of values as value.
+
 ~~~js
 User.where({ $in: {
   name: ['foo', 'bar'],
@@ -329,6 +353,8 @@ User.where({ $in: {
 ~~~sql
 select "users".* from "users" where ("name" in ('foo', 'bar'))
 ~~~
+
+If multiple properties are present they get connected by an `and` operator.
 
 ~~~js
 User.where({ $in: {
@@ -341,6 +367,8 @@ select "users".* from "users" where ("name" in ('foo', 'bar') and "age" in (18, 
 ~~~
 
 ### NotIn
+
+`$notIn` works same as `$in` but inverts the result.
 
 ~~~js
 User.where({ $notIn: {
@@ -363,6 +391,8 @@ select "users".* from "users" where ("name" not in ('foo', 'bar') and "age" not 
 
 ### Between
 
+The `$between` property needs an object as value with the column name as key and an  `Array` with the min and max values as value.
+
 ~~~js
 User.where({ $between: {
   age: [18, 21],
@@ -371,6 +401,8 @@ User.where({ $between: {
 ~~~sql
 select "users".* from "users" where ("age" between 18 and 21)
 ~~~
+
+If multiple properties are present they get connected by an `and` operator.
 
 ~~~js
 User.where({ $between: {
@@ -383,6 +415,8 @@ select "users".* from "users" where ("age" between 18 and 21 and "size" between 
 ~~~
 
 ### NotBetween
+
+`$notBetween` works same as `$between` but inverts the result.
 
 ~~~js
 User.where({ $notBetween: {
