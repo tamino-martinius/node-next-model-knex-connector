@@ -40,6 +40,5 @@ jspm_packages
 # Optional REPL history
 .node_repl_history
 
-# Keep empty tmp folder
-tmp/*
-!tmp/.keep
+# Ignore test db
+*.sqlite
