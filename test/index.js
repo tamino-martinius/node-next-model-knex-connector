@@ -63,7 +63,7 @@ describe('NextModelKnexConnector', function() {
     client: 'sqlite3',
     useNullAsDefault: true,
     connection: {
-      filename: './tmp/testdb.sqlite',
+      filename: './test.sqlite',
     },
   }));
 
