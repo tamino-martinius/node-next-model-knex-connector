@@ -8,13 +8,25 @@ const {
 } = require('inflection');
 
 const {
+  capitalize,
+  filter,
   first,
+  forEach,
+  includes,
+  isEmpty,
+  isPlainObject,
+  keys,
+  omit,
+  startsWith,
   values,
 } = require('lodash');
 
 module.exports = class NextModelKnexConnector {
+
+  // Functions
+
   constructor(options) {
-    this.knex = require('knex')(options);
+    this.knex = Knex(options);
   }
 
   tableName(modelName) {
@@ -22,24 +34,24 @@ module.exports = class NextModelKnexConnector {
   }
 
   all(Klass) {
-    const query = this._order(Klass, this._query(Klass));
+    const query = this._order(Klass, this.query(Klass));
     return query;
   }
 
   first(Klass) {
-    const query = this._order(Klass, this._query(Klass));
+    const query = this._order(Klass, this.query(Klass));
     return query.limit(1).then(arr => (arr && arr[0]));
   }
 
   last(Klass) {
     if (Klass._limit || Klass._skip) throw new Error('`last` is not supportet in combination with `skip` or `limit`');
     if (!Klass.defaultOrder) throw new Error('`last` only works if order is present');
-    const query = this._reverse(Klass, this._query(Klass));
+    const query = this._reverse(Klass, this.query(Klass));
     return query.limit(1).then(arr => (arr && arr[0]));
   }
 
   count(Klass) {
-    const query = this._query(Klass);
+    const query = this.query(Klass);
     return query.count(Klass.identifier).then(rows => first(values(first(rows))));
   }
 
@@ -47,7 +59,7 @@ module.exports = class NextModelKnexConnector {
     const schema = Klass.fetchSchema();
     const hasUuidIdentifier = schema[Klass.identifier].type === 'uuid';
     let dbSchema = this.knex.schema;
-    if (hasUuidIdentifier) dbSchema = dbSchema.raw('CREATE EXTENSION pgcrypto');
+    // if (hasUuidIdentifier) dbSchema = dbSchema.raw('CREATE EXTENSION pgcrypto');
     return dbSchema.createTable(Klass.tableName, function(table) {
       for (const key in schema) {
         const type = schema[key].type;
@@ -101,16 +113,68 @@ module.exports = class NextModelKnexConnector {
     }
   }
 
-  _table(Klass) {
-    return this.knex(Klass.tableName);
-  }
-
-  _query(Klass) {
+  query(Klass) {
     let query = this._table(Klass);
-    if (Klass.defaultScope) query = query.where(Klass.defaultScope);
+    this._buildQuery(query, Klass.defaultScope);
     if (Klass._skip) query = query.offset(Klass._skip);
     if (Klass._limit) query = query.limit(Klass._limit);
+    console.log(query.toString());
     return query;
+  }
+
+  // Private functions
+
+  _buildQuery(currentQuery, scope, queryType = 'where', column = null) {
+    if (isEmpty(scope)) return currentQuery;
+    if (isPlainObject(scope)) {
+      const scopeKeys = keys(scope);
+      const specialKeys = filter(scopeKeys, (key) => startsWith(key, '$'));
+      const simpleScope = omit(scope, specialKeys);
+      const connector = this;
+      currentQuery[queryType](function() {
+        let query = this;
+        if (!isEmpty(simpleScope)) {
+          query = query.where(simpleScope);
+        }
+        forEach(specialKeys, specialKey => {
+          const key = specialKey.substr(1);
+          switch (true) {
+            case /^(and|or)$/.test(key): {
+              const subQueryType = key + 'Where';
+              forEach(scope[specialKey], subScope => {
+                connector._buildQuery(query, subScope, subQueryType);
+              });
+              break;
+            }
+            case /^(not|Null|notNull)$/.test(key): {
+              const subQueryType = 'where' + capitalize(key);
+              connector._buildQuery(query, scope[specialKey], subQueryType);
+              break;
+            }
+            case /^(in|notIn|between|notBetween)$/.test(key): {
+              const subQueryType = 'where' + capitalize(key);
+              forEach(scope[specialKey], (value, key) => {
+                connector._buildQuery(query, value, subQueryType, key);
+              });
+              break;
+            }
+            default: {
+              throw new Error(`Unknown special command '${key}'`);
+            }
+          }
+        });
+      });
+    } else {
+      if (column) {
+        currentQuery[queryType](column, scope);
+      } else {
+        currentQuery[queryType](scope);
+      }
+    }
+  }
+
+  _table(Klass) {
+    return this.knex(Klass.tableName);
   }
 
   _order(Klass, query) {
