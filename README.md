@@ -15,6 +15,7 @@ Supports:
 * mssql (**not** tested)
 
 ### Roadmap / Where can i contribute
+
 * Fix Typos
 * CI/Tests are just set up for sqlite - others should be tested too
 * Add more **examples**
@@ -23,9 +24,22 @@ Supports:
 * There are already some **tests**, but not every test case is covered.
 
 ## TOC
+
 * [Example](#example)
   * [Create Connector](#create-connector)
   * [Use Connector](#use-connector)
+* [Build Queries](#build-queries)
+  * [Where](#where)
+  * [And](#and)
+  * [Or](#or)
+  * [Not](#not)
+  * [Nesting](#nesting)
+  * [Null](#null)
+  * [NotNull](#notnull)
+  * [In](#in)
+  * [NotIn](#notin)
+  * [Between](#between)
+  * [NotBetween](#notbetween)
 * [Changelog](#changelog)
 
 ## Example
@@ -129,6 +143,264 @@ const Address = class Address extends BaseModel {
     };
   }
 }
+~~~
+
+## Build Queries
+
+### Where
+
+~~~js
+User.where({ name: 'foo' });
+~~~
+~~~sql
+select "users".* from "users" where ("name" = 'foo')
+~~~
+
+~~~js
+User.where({ name: 'foo', age: 18 });
+~~~
+~~~sql
+select "users".* from "users" where ("name" = 'foo' and "age" = 18)
+~~~
+
+~~~js
+User.where({ name: 'foo', age: 18 }).orWhere({ name: 'bar' });
+~~~
+~~~sql
+select "users".* from "users" where (("name" = 'foo' and "age" = 18) or ("name" = 'bar'))
+~~~
+
+### And
+
+~~~js
+User.where({ $and: [
+  { name: 'foo' },
+]});
+~~~
+~~~sql
+select "users".* from "users" where (("name" = 'foo'))
+~~~
+
+~~~js
+User.where({ $and: [
+  { name: 'foo' },
+  { age: 18 },
+]});
+~~~
+~~~sql
+select "users".* from "users" where (("name" = 'foo') and ("age" = 18))
+~~~
+
+~~~js
+User.where({ $and: [
+  { name: 'foo' },
+  { age: 18 },
+]}).orWhere({ $and: [
+  { name: 'bar' },
+  { age: 21 },
+]});
+~~~
+~~~sql
+select "users".* from "users" where ((("name" = 'foo') and ("age" = 18)) or (("name" = 'bar') and ("age" = 21)))
+~~~
+
+### Or
+
+~~~js
+User.where({ $or: [
+  { name: 'foo' },
+]});
+~~~
+~~~sql
+select "users".* from "users" where (("name" = 'foo'))
+~~~
+
+~~~js
+User.where({ $or: [
+  { name: 'foo' },
+  { name: 'bar' },
+]});
+~~~
+~~~sql
+select "users".* from "users" where (("name" = 'foo') or ("name" = 'bar'))
+~~~
+
+~~~js
+User.where({ $or: [
+  { name: 'foo' },
+  { age: 18 },
+]}).where({ $or: [
+  { name: 'bar' },
+  { age: 21 },
+]});
+~~~
+~~~sql
+select "users".* from "users" where ((("name" = 'foo') or ("age" = 18)) and (("name" = 'bar') or ("age" = 21)))
+~~~
+
+### Not
+
+~~~js
+User.where({ $not: {
+  name: 'foo'
+}});
+~~~
+~~~sql
+select "users".* from "users" where (not ("name" = 'foo'))
+~~~
+
+~~~js
+User.where({ $not: {
+  name: 'foo',
+  age: 18,
+}});
+~~~
+~~~sql
+select "users".* from "users" where (not ("name" = 'foo' and "age" = 18))
+~~~
+
+~~~js
+User.where({ $not: {
+  name: 'foo',
+  age: 18,
+}}).where({ $not: {
+  name: 'bar',
+  age: 21,
+}});
+~~~
+~~~sql
+select "users".* from "users" where ((not ("name" = 'foo' and "age" = 18)) and (not ("name" = 'bar' and "age" = 21)))
+~~~
+
+### Nesting
+
+~~~js
+User.where({ $not: {
+  $or: [
+    { name: 'foo' },
+    { age: 21 },
+  ],
+}});
+~~~
+~~~sql
+select "users".* from "users" where (not (("name" = 'foo') or ("age" = 21)))
+~~~
+
+~~~js
+User.where({ $not: {
+  $and: [
+    { name: 'foo' },
+    { $or: [
+      { age: 18 },
+      { age: 21 },
+    ]},
+  ],
+}});
+~~~
+~~~sql
+select "users".* from "users" where (not (("name" = 'foo') and (("age" = 18) or ("age" = 21))))
+~~~
+
+### Null
+
+~~~js
+User.where({ $null: 'name' });
+~~~
+~~~sql
+select "users".* from "users" where ("name" is null)
+~~~
+
+### NotNull
+
+~~~js
+User.where({ $notNull: 'name' });
+~~~
+~~~sql
+select "users".* from "users" where ("name" is not null)
+~~~
+
+### In
+
+~~~js
+User.where({ $in: {
+  name: ['foo', 'bar'],
+}});
+~~~
+~~~sql
+select "users".* from "users" where ("name" in ('foo', 'bar'))
+~~~
+
+~~~js
+User.where({ $in: {
+  name: ['foo', 'bar'],
+  age: [18, 19, 20, 21],
+}});
+~~~
+~~~sql
+select "users".* from "users" where ("name" in ('foo', 'bar') and "age" in (18, 19, 20, 21))
+~~~
+
+### NotIn
+
+~~~js
+User.where({ $notIn: {
+  name: ['foo', 'bar'],
+}});
+~~~
+~~~sql
+select "users".* from "users" where ("name" not in ('foo', 'bar'))
+~~~
+
+~~~js
+User.where({ $notIn: {
+  name: ['foo', 'bar'],
+  age: [18, 19, 20, 21],
+}});
+~~~
+~~~sql
+select "users".* from "users" where ("name" not in ('foo', 'bar') and "age" not in (18, 19, 20, 21))
+~~~
+
+### Between
+
+~~~js
+User.where({ $between: {
+  age: [18, 21],
+}});
+~~~
+~~~sql
+select "users".* from "users" where ("age" between 18 and 21)
+~~~
+
+~~~js
+User.where({ $between: {
+  age: [18, 21],
+  size: [160, 185],
+}});
+~~~
+~~~sql
+select "users".* from "users" where ("age" between 18 and 21 and "size" between 160 and 165)
+~~~
+
+### NotBetween
+
+~~~js
+User.where({ $notBetween: {
+  age: [18, 21],
+}});
+~~~
+~~~sql
+select "users".* from "users" where ("age" not between 18 and 21)
+~~~
+
+~~~js
+User.where({ $notBetween: {
+  age: [18, 21],
+  size: [160, 185],
+}});
+~~~
+~~~sql
+select "users".* from "users" where ("age" not between 18 and 21 and "size" not between 160 and 165)
 ~~~
 
 ## Changelog
