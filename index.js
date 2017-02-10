@@ -118,7 +118,7 @@ module.exports = class NextModelKnexConnector {
     this._buildQuery(query, Klass.defaultScope);
     if (Klass._skip) query = query.offset(Klass._skip);
     if (Klass._limit) query = query.limit(Klass._limit);
-    console.log(query.toString());
+    // console.log(query.toString());
     return query;
   }
 
