@@ -5,10 +5,10 @@ SQL connector for [NextModel](https://github.com/tamino-martinius/node-next-mode
 Allows you to use **Knex** as Database Connector for NextModel:
 
 Supports:
-* pg (**manually** tested)
+* pg
 * sqlite3
-* mysql (**not** tested)
-* mysql2 (**not** tested)
+* mysql
+* mysql2
 * mariasql (**not** tested)
 * strong-oracle (**not** tested)
 * oracle (**not** tested)
