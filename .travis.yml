@@ -1,22 +1,35 @@
 language: node_js
+services:
+  - mysql
+  - postgresql
 node_js:
-  - "4"
-  - "5"
+  # - "4"
+  # - "5"
   - "6.9.1"
-  - "6.9.2"
-  - "6.9.3"
-  - "6.9.4"
-  - "6.9.5"
-  - "6"
-  - "7.3.0"
-  - "7.4.0"
-  - "7.5.0"
-  - "7"
-  - "node"
-  - "iojs"
+#   - "6.9.2"
+#   - "6.9.3"
+#   - "6.9.4"
+#   - "6.9.5"
+#   - "6"
+#   - "7.3.0"
+#   - "7.4.0"
+#   - "7.5.0"
+#   - "7"
+#   - "node"
+#   - "iojs"
+env:
+  - DB=sqlite
+  - DB=mysql
+  - DB=postgres
+before_script:
+  - sh -c "if [ '$DB' = 'mysql' ]; then npm install mysql2; fi"
+  - sh -c "if [ '$DB' = 'postgres' ]; then npm install pg; fi"
+before_install:
+  - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'CREATE DATABASE IF NOT EXISTS test;'; fi"
+  - sh -c "if [ '$DB' = 'postgres' ]; then psql -c 'CREATE DATABASE IF NOT EXISTS test;' -U postgres; fi"
 
-matrix:
-  allow_failures:
-    - node_js: "4"
-    - node_js: "5"
-    - node_js: "iojs"
+# matrix:
+#   allow_failures:
+#     - node_js: "4"
+#     - node_js: "5"
+#     - node_js: "iojs"

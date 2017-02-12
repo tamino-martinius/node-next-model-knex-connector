@@ -64,13 +64,49 @@ const seedDb = function() {
 };
 
 describe('NextModelKnexConnector', function() {
-  def('connector', () => new NextModelKnexConnector({
-    client: 'sqlite3',
-    useNullAsDefault: true,
-    connection: {
-      filename: './test.sqlite',
-    },
-  }));
+  switch (process.env.DB) {
+    case 'sqlite': {
+      def('connector', () => new NextModelKnexConnector({
+        client: 'sqlite3',
+        useNullAsDefault: true,
+        connection: {
+          filename: ':memory:',
+        },
+      }));
+      break;
+    }
+    case 'mysql': {
+      def('connector', () => new NextModelKnexConnector({
+        client: 'mysql',
+        connection: {
+          host : '127.0.0.1',
+          database : 'test',
+        },
+      }));
+      break;
+    }
+    case 'postgres': {
+      def('connector', () => new NextModelKnexConnector({
+        client: 'pg',
+        connection: {
+          host : '127.0.0.1',
+          user : 'your_database_user',
+          password : 'your_database_password',
+          database : 'test',
+        },
+      }));
+      break;
+    }
+    default: {
+      def('connector', () => new NextModelKnexConnector({
+        client: 'sqlite3',
+        useNullAsDefault: true,
+        connection: {
+          filename: ':memory:',
+        },
+      }));
+    }
+  }
 
   beforeEach(cleanDb);
 
