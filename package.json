@@ -1,7 +1,7 @@
 {
   "name": "next-model-knex-connector",
   "version": "0.0.1",
-  "description": "Knex connector for next-model package.",
+  "description": "SQL connector for next-model package using Knex.",
   "author": "Tamino Martinius <dev@zaku.eu>",
   "license": "MIT",
   "repository": {
