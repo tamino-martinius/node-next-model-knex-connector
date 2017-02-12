@@ -42,10 +42,10 @@
     "eslint": "^2.13.1",
     "expect.js": "^0.3.1",
     "mocha": "^3.0.2",
+    "next-model": "git://github.com/tamino-martinius/node-next-model.git#9f27a4c",
     "npm-watch": "^0.1.6",
     "sinon": "^1.17.7",
-    "sqlite3": "^3.1.8",
-    "next-model": "git://github.com/tamino-martinius/node-next-model.git#9f27a4c"
+    "sqlite3": "^3.1.8"
   },
   "peerDependencies": {
     "pg": "^6.1.2",
