@@ -77,7 +77,7 @@ describe('NextModelKnexConnector', function() {
     }
     case 'mysql': {
       def('connector', () => new NextModelKnexConnector({
-        client: 'mysql',
+        client: 'mysql2',
         connection: {
           host : '127.0.0.1',
           database : 'test',
