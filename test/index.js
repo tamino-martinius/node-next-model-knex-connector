@@ -80,7 +80,7 @@ describe('NextModelKnexConnector', function() {
         client: 'mysql',
         connection: {
           host : '127.0.0.1',
-          username: 'travis',
+          user: 'travis',
           database : 'test_mysql',
         },
       }));
@@ -91,7 +91,7 @@ describe('NextModelKnexConnector', function() {
         client: 'mysql2',
         connection: {
           host : '127.0.0.1',
-          username: 'travis',
+          user: 'travis',
           database : 'test_mysql2',
         },
       }));
