@@ -76,6 +76,7 @@ describe('NextModelKnexConnector', function() {
       break;
     }
     case 'mysql': {
+      this.timeout(10000);
       def('connector', () => new NextModelKnexConnector({
         client: 'mysql',
         connection: {
@@ -87,6 +88,7 @@ describe('NextModelKnexConnector', function() {
       break;
     }
     case 'mysql2': {
+      this.timeout(10000);
       def('connector', () => new NextModelKnexConnector({
         client: 'mysql2',
         connection: {
@@ -98,6 +100,7 @@ describe('NextModelKnexConnector', function() {
       break;
     }
     case 'postgres': {
+      this.timeout(10000);
       def('connector', () => new NextModelKnexConnector({
         client: 'pg',
         connection: {
