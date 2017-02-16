@@ -2,6 +2,12 @@
 
 ## vNext
 
+Add new queries for
+* `$lt`
+* `$lte`
+* `$gt`
+* `$gte`
+
 ## v0.0.4
 
 Updated NextModel package to `v0.0.4`.
