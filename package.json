@@ -48,8 +48,9 @@
     "sqlite3": "^3.1.8"
   },
   "peerDependencies": {
-    "pg": "^6.1.2",
-    "sqlite3": "^3.1.8"
+    "mysql2": "*",
+    "pg": "*",
+    "sqlite3": "*"
   },
   "dependencies": {
     "lodash": "^4.12.0",
