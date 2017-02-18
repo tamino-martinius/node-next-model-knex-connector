@@ -42,7 +42,7 @@
     "eslint": "^2.13.1",
     "expect.js": "^0.3.1",
     "mocha": "^3.0.2",
-    "next-model": "git://github.com/tamino-martinius/node-next-model.git#1e61b31",
+    "next-model": "^0.0.4",
     "npm-watch": "^0.1.6",
     "sinon": "^1.17.7",
     "sqlite3": "^3.1.8"
