@@ -8,6 +8,10 @@ Add new queries for
 * `$gt`
 * `$gte`
 
+## v0.1.0
+
+Used next-model from npm instead of Github repo
+
 ## v0.0.4
 
 Updated NextModel package to `v0.0.4`.
