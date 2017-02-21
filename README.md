@@ -16,6 +16,8 @@ Supports:
 
 ### Roadmap / Where can i contribute
 
+See [GitHub](https://github.com/tamino-martinius/node-next-model-knex-connector/projects/1) project for current progress/tasks
+
 * Fix Typos
 * CI is missing for some Databases
 * Add more **examples**
