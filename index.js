@@ -129,8 +129,8 @@ module.exports = class NextModelKnexConnector {
     return query.select(Klass.tableName + '.*');
   }
 
-  _buildQuery(currentQuery, scope, queryType = 'where', column = null) {
-    if (isEmpty(scope)) return currentQuery;
+  _buildQuery(currentQuery, scope, queryType = 'where', args = null) {
+    if (isEmpty(scope) && isEmpty(args)) return currentQuery;
     if (isPlainObject(scope)) {
       const scopeKeys = keys(scope);
       const specialKeys = filter(scopeKeys, (key) => startsWith(key, '$'));
@@ -143,39 +143,84 @@ module.exports = class NextModelKnexConnector {
         }
         forEach(specialKeys, specialKey => {
           const key = specialKey.substr(1);
-          switch (true) {
-            case /^(and|or)$/.test(key): {
-              const subQueryType = key + 'Where';
-              forEach(scope[specialKey], subScope => {
-                connector._buildQuery(query, subScope, subQueryType);
-              });
-              break;
-            }
-            case /^(not|null|notNull)$/.test(key): {
-              const subQueryType = 'where' + upperFirst(key);
-              connector._buildQuery(query, scope[specialKey], subQueryType);
-              break;
-            }
-            case /^(in|notIn|between|notBetween)$/.test(key): {
-              const subQueryType = 'where' + upperFirst(key);
-              forEach(scope[specialKey], (value, key) => {
-                connector._buildQuery(query, value, subQueryType, key);
-              });
-              break;
-            }
-            default: {
-              throw new Error(`Unknown special command '${key}'`);
-            }
-          }
+          connector._buildSpecialQuery(key, specialKey, scope, query);
         });
       });
     } else {
-      if (column) {
-        currentQuery[queryType](column, scope);
+      if (args) {
+        currentQuery[queryType].apply(currentQuery, args);
       } else {
         currentQuery[queryType](scope);
       }
     }
+  }
+
+  _buildSpecialQuery(key, specialKey, scope, query) {
+    switch (true) {
+      case /^(and|or)$/.test(key): {
+        this._buildNestedQuery(key, specialKey, scope, query);
+        break;
+      }
+      case /^(not|null|notNull)$/.test(key): {
+        this._buildNegationQuery(key, specialKey, scope, query);
+        break;
+      }
+      case /^(in|notIn|between|notBetween)$/.test(key): {
+        this._buildRangeQuery(key, specialKey, scope, query);
+        break;
+      }
+      case /^(eq|lt|lte|gt|gte)$/.test(key): {
+        this._buildEquationQuery(key, specialKey, scope, query);
+        break;
+      }
+      case /^(raw)$/.test(key): {
+        this._buildRawQuery(key, specialKey, scope, query);
+        break;
+      }
+      default: {
+        throw new Error(`Unknown special command '${key}'`);
+      }
+    }
+  }
+
+  _buildNestedQuery(key, specialKey, scope, query) {
+    const subQueryType = key + 'Where';
+    forEach(scope[specialKey], subScope => {
+      this._buildQuery(query, subScope, subQueryType);
+    });
+  }
+
+  _buildNegationQuery(key, specialKey, scope, query) {
+    const subQueryType = 'where' + upperFirst(key);
+    this._buildQuery(query, scope[specialKey], subQueryType);
+  }
+
+  _buildRangeQuery(key, specialKey, scope, query) {
+    const subQueryType = 'where' + upperFirst(key);
+    forEach(scope[specialKey], (value, key) => {
+      this._buildQuery(query, value, subQueryType, [key, value]);
+    });
+  }
+
+  _buildEquationQuery(key, specialKey, scope, query) {
+    let operator;
+    switch (key) {
+      case 'eq': operator = '='; break;
+      case 'lt': operator = '<'; break;
+      case 'lte': operator = '<='; break;
+      case 'gt': operator = '>'; break;
+      case 'gte': operator = '>='; break;
+    }
+    forEach(scope[specialKey], (value, key) => {
+      this._buildQuery(query, value, 'where', [key, operator, value]);
+    });
+  }
+
+  _buildRawQuery(key, specialKey, scope, query) {
+    const subQueryType = 'where' + upperFirst(key);
+    forEach(scope[specialKey], (value, key) => {
+      this._buildQuery(query, value, subQueryType, [key, value]);
+    });
   }
 
   _table(Klass) {

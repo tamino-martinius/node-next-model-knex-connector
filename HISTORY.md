@@ -3,10 +3,17 @@
 ## vNext
 
 Add new queries for
+* `$exists`
+
+## v0.2.0
+
+Added new query types for **Equation** and **Raw** Queries
+* `$eq`
 * `$lt`
 * `$lte`
 * `$gt`
 * `$gte`
+* `$raw`
 
 ## v0.1.0
 

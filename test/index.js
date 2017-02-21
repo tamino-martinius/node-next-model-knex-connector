@@ -289,6 +289,204 @@ describe('NextModelKnexConnector', function() {
               return $subject.then(rows => expect(rows).to.eql([user2, user3]));
             });
           });
+
+          context('when query with $eq', function() {
+            def('userScope', () => ({
+              $eq: {
+                age: 18,
+              },
+            }));
+
+            it('filters rows', function() {
+              return $subject.then(rows => expect(rows).to.eql([user1]));
+            });
+          });
+
+          context('when query with multiple $eq', function() {
+            def('userScope', () => ({
+              $eq: {
+                age: 21,
+                name: 'foo',
+              },
+            }));
+
+            it('filters rows', function() {
+              return $subject.then(rows => expect(rows).to.eql([user2]));
+            });
+          });
+
+          context('when query with $lt', function() {
+            def('userScope', () => ({
+              $lt: {
+                age: 20,
+              },
+            }));
+
+            it('filters rows', function() {
+              return $subject.then(rows => expect(rows).to.eql([user1]));
+            });
+
+            context('when value is equal', function() {
+              def('userScope', () => ({
+                $lt: {
+                  age: 18,
+                },
+              }));
+
+              it('filters rows', function() {
+                return $subject.then(rows => expect(rows).to.eql([]));
+              });
+            });
+          });
+
+          context('when query with multiple $lt', function() {
+            def('userScope', () => ({
+              $lt: {
+                age: 20,
+                name: 'foul',
+              },
+            }));
+
+            it('filters rows', function() {
+              return $subject.then(rows => expect(rows).to.eql([user1]));
+            });
+          });
+
+          context('when query with $lte', function() {
+            def('userScope', () => ({
+              $lte: {
+                age: 20,
+              },
+            }));
+
+            it('filters rows', function() {
+              return $subject.then(rows => expect(rows).to.eql([user1]));
+            });
+
+            context('when value is equal', function() {
+              def('userScope', () => ({
+                $lte: {
+                  age: 18,
+                },
+              }));
+
+              it('filters rows', function() {
+                return $subject.then(rows => expect(rows).to.eql([user1]));
+              });
+            });
+          });
+
+          context('when query with multiple $lte', function() {
+            def('userScope', () => ({
+              $lte: {
+                age: 20,
+                name: 'foul',
+              },
+            }));
+
+            it('filters rows', function() {
+              return $subject.then(rows => expect(rows).to.eql([user1]));
+            });
+          });
+
+          context('when query with $gt', function() {
+            def('userScope', () => ({
+              $gt: {
+                age: 20,
+              },
+            }));
+
+            it('filters rows', function() {
+              return $subject.then(rows => expect(rows).to.eql([user2, user3]));
+            });
+
+            context('when value is equal', function() {
+              def('userScope', () => ({
+                $gt: {
+                  age: 21,
+                },
+              }));
+
+              it('filters rows', function() {
+                return $subject.then(rows => expect(rows).to.eql([]));
+              });
+            });
+          });
+
+          context('when query with multiple $gt', function() {
+            def('userScope', () => ({
+              $gt: {
+                age: 20,
+                name: 'baz',
+              },
+            }));
+
+            it('filters rows', function() {
+              return $subject.then(rows => expect(rows).to.eql([user2]));
+            });
+          });
+
+          context('when query with $gte', function() {
+            def('userScope', () => ({
+              $gte: {
+                age: 20,
+              },
+            }));
+
+            it('filters rows', function() {
+              return $subject.then(rows => expect(rows).to.eql([user2, user3]));
+            });
+
+            context('when value is equal', function() {
+              def('userScope', () => ({
+                $gte: {
+                  age: 21,
+                },
+              }));
+
+              it('filters rows', function() {
+                return $subject.then(rows => expect(rows).to.eql([user2, user3]));
+              });
+            });
+          });
+
+          context('when query with multiple $gte', function() {
+            def('userScope', () => ({
+              $gte: {
+                age: 20,
+                name: 'baz',
+              },
+            }));
+
+            it('filters rows', function() {
+              return $subject.then(rows => expect(rows).to.eql([user2]));
+            });
+          });
+
+          context('when query with $raw', function() {
+            def('userScope', () => ({
+              $raw: {
+                ['age = ?']: [18],
+              },
+            }));
+
+            it('filters rows', function() {
+              return $subject.then(rows => expect(rows).to.eql([user1]));
+            });
+          });
+
+          context('when query with multiple $eq', function() {
+            def('userScope', () => ({
+              $raw: {
+                ['age = ?']: [21],
+                ['name = ?']: ['foo'],
+              },
+            }));
+
+            it('filters rows', function() {
+              return $subject.then(rows => expect(rows).to.eql([user2]));
+            });
+          });
         });
       });
     });
