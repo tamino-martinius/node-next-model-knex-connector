@@ -17,10 +17,9 @@ Supports:
 ### Roadmap / Where can i contribute
 
 * Fix Typos
-* CI/Tests are just set up for sqlite - others should be tested too
+* CI is missing for some Databases
 * Add more **examples**
-* Add **exists** and **raw** queries
-* Add **join** and **subqueries**
+* Add **exists**, **join** and **subqueries**
 * There are already some **tests**, but not every test case is covered.
 
 ## TOC
@@ -36,10 +35,12 @@ Supports:
   * [Nesting](#nesting)
   * [Null](#null)
   * [NotNull](#notnull)
+  * [Equation](#equation)
   * [In](#in)
   * [NotIn](#notin)
   * [Between](#between)
   * [NotBetween](#notbetween)
+  * [Raw](#raw)
 * [Changelog](#changelog)
 
 ## Example
@@ -341,6 +342,45 @@ User.where({ $notNull: 'name' });
 select "users".* from "users" where ("name" is not null)
 ~~~
 
+### Equation
+
+There are five different equation properties available.
+* `$eq` checks for equal
+* `$lt` checks for lower
+* `$gt` checks for greater
+
+`$lt`, `$gt` also allows equal values.
+
+The property needs to be an object as value with the column name as key and the equation as value.
+
+~~~js
+User.where({ $lt: { age: 18 } });
+~~~
+~~~sql
+select "users".* from "users" where ("age" < 18)
+~~~
+
+~~~js
+User.where({ $lt: { age: 18, size: 180 } });
+~~~
+~~~sql
+select "users".* from "users" where ("age" < 18 and "size" < 180)
+~~~
+
+~~~js
+User.where({ $lte: { age: 18 } });
+~~~
+~~~sql
+select "users".* from "users" where ("age" <= 18)
+~~~
+
+~~~js
+User.where({ $lte: { age: 18, size: 180 } });
+~~~
+~~~sql
+select "users".* from "users" where ("age" <= 18 and "size" <= 180)
+~~~
+
 ### In
 
 The `$in` property needs an object as value with the column name as key and the `Array` of values as value.
@@ -437,6 +477,31 @@ User.where({ $notBetween: {
 select "users".* from "users" where ("age" not between 18 and 21 and "size" not between 160 and 165)
 ~~~
 
+### Raw
+
+The `$raw` property allows to write custom and database specific queries. Pass queries as object, where key is the query and value are the bindings.
+
+_Note: See [Knex documentation](http://knexjs.org/#Raw-Bindings) for more details about bindings._
+
+~~~js
+User.where({ $raw: {
+  ['age = ?']: [18],
+}});
+~~~
+~~~sql
+select "users".* from "users" where ("age" = 18)
+~~~
+
+~~~js
+User.where({ $notBetween: {
+  ['age = ?']: [18],
+  ['name = ?']: ['foo'],
+}});
+~~~
+~~~sql
+select "users".* from "users" where ("age" = 18 and "name" = 'foo')
+~~~
+
 ## Changelog
 
 See [history](TODO) for more details.
@@ -446,3 +511,4 @@ See [history](TODO) for more details.
 * `0.0.3` **2017-02-12** Added CI
 * `0.0.4` **2017-02-16** Updated to NextModel v0.0.4
 * `0.1.0` **2017-02-18** Used next-model from npm instead of Github repo
+* `0.2.0` **2017-02-21** Added new query types
