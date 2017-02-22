@@ -14,12 +14,12 @@ services:
 
 node_js:
   - "4.3.2"
-  # - "4"
-  # - "5"
-  # - "6"
-  # - "7"
-  # - "node"
-  # - "iojs"
+  - "4"
+  - "5"
+  - "6"
+  - "7"
+  - "node"
+  - "iojs"
 
 env:
   - DB=sqlite3
@@ -41,6 +41,6 @@ before_script:
   - sh -c "if [ '$DB' = 'postgres' ]; then npm install pg; fi"
   - sh -c "if [ '$DB' = 'oracledb' ]; then npm install oracledb; fi"
 
-# matrix:
-#   allow_failures:
-#     - node_js: "iojs"
+matrix:
+  allow_failures:
+    - node_js: "iojs"
