@@ -111,7 +111,7 @@ describe('NextModelKnexConnector', function() {
   beforeEach(cleanDb);
 
   afterEach(function() {
-    connector.knex.destroy();
+    $connector.knex.destroy();
   });
 
   def('User', () => $User);
