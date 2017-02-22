@@ -73,6 +73,7 @@ describe('NextModelKnexConnector', function() {
         host: '127.0.0.1',
         user: 'root',
         password: '',
+        database: 'test_mysql',
       };
       break;
     }
@@ -81,41 +82,31 @@ describe('NextModelKnexConnector', function() {
         host: '127.0.0.1',
         user: 'root',
         password: '',
+        database: 'test_mysql2',
       };
       break;
     }
     case 'postgres': {
       connection = {
         host: '127.0.0.1',
+        database: 'test_postgres',
       };
       break;
     }
     case 'oracledb': {
       connection = {
         host: '127.0.0.1',
-        user: 'travis',
-        password: 'travis',
+        externalAuth: true,
       };
       break;
     }
   }
 
-  const connectionSettings = {
+  def('connector', () => new NextModelKnexConnector({
     client,
     connection,
     useNullAsDefault: true,
-  };
-
-  if (client != 'sqlite3') {
-    before(function() {
-      return new NextModelKnexConnector(connectionSettings).knex
-        .raw('CREATE DATABASE test;').then(() => {
-          connectionSettings.connection.database = 'test';
-        });
-    });
-  }
-
-  def('connector', () => new NextModelKnexConnector(connectionSettings));
+  }));
 
   beforeEach(cleanDb);
 
