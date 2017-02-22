@@ -4,6 +4,9 @@ const NextModelKnexConnector = require('..');
 const NextModel = require('next-model');
 const expect = require('expect.js');
 
+const lodash = require('lodash');
+const omit = lodash.omit;
+
 def('BaseModel', () => class BaseModel extends NextModel {
   static get connector() {
     return $connector;
@@ -66,6 +69,7 @@ const seedDb = function() {
 describe('NextModelKnexConnector', function() {
   this.timeout(10000);
   const client = process.env.DB || 'sqlite3';
+  const isOracle = client === 'oracledb';
   let connection = { filename: ':memory:' };
   switch (process.env.DB) {
     case 'mysql': {
@@ -147,7 +151,7 @@ describe('NextModelKnexConnector', function() {
           def('User', () => $User.skip(2));
 
           it('skips rows', function() {
-            return $subject.then(rows => expect(rows).to.eql([user3]));
+            return $subject.then(rows => expect(omit(rows, 'ROWNUM_')).to.eql([user3]));
           });
         });
 
@@ -459,7 +463,7 @@ describe('NextModelKnexConnector', function() {
           context('when query with $raw', function() {
             def('userScope', () => ({
               $raw: {
-                ['age = ?']: [18],
+                ['?? = ?']: ['age', 18],
               },
             }));
 
@@ -471,8 +475,8 @@ describe('NextModelKnexConnector', function() {
           context('when query with multiple $eq', function() {
             def('userScope', () => ({
               $raw: {
-                ['age = ?']: [21],
-                ['name = ?']: ['foo'],
+                ['?? > ?']: ['age', 20],
+                ['?? = ?']: ['name', 'foo'],
               },
             }));
 
@@ -510,7 +514,7 @@ describe('NextModelKnexConnector', function() {
           def('User', () => $User.skip(2));
 
           it('skips rows', function() {
-            return $subject.then(rows => expect(rows).to.eql([user3]));
+            return $subject.then(rows => expect(omit(rows, 'ROWNUM_')).to.eql([user3]));
           });
         });
 
@@ -558,7 +562,7 @@ describe('NextModelKnexConnector', function() {
           def('User', () => $User.skip(2));
 
           it('skips rows', function() {
-            return $subject.then(rows => expect(rows).to.eql(user3));
+            return $subject.then(rows => expect(omit(rows, 'ROWNUM_')).to.eql(user3));
           });
         });
 
@@ -676,7 +680,11 @@ describe('NextModelKnexConnector', function() {
         expect($user.isNew).to.be(true);
         return $subject.then(user => {
           expect(user.isNew).to.be(false);
-          expect(user.id).to.be.a('number');
+          if (isOracle) {
+            expect($user.id).to.be.a('string');
+          } else {
+            expect($user.id).to.be.a('number');
+          }
           expect(user.name).to.be('foo');
         });
       });
@@ -687,19 +695,31 @@ describe('NextModelKnexConnector', function() {
 
         it('updates the record', function() {
           expect($user.isNew).to.be(false);
-          expect($user.id).to.be.a('number');
+          if (isOracle) {
+            expect($user.id).to.be.a('string');
+          } else {
+            expect($user.id).to.be.a('number');
+          }
           expect($user.name).to.be('foo');
           $user.name = 'bar';
           return $subject
           .then(user => {
             expect(user.isNew).to.be(false);
-            expect(user.id).to.be.a('number');
+            if (isOracle) {
+              expect($user.id).to.be.a('string');
+            } else {
+              expect($user.id).to.be.a('number');
+            }
             expect(user.name).to.be('bar');
             return $user.reload();
           })
           .then(user => {
             expect(user.isNew).to.be(false);
-            expect(user.id).to.be.a('number');
+            if (isOracle) {
+              expect($user.id).to.be.a('string');
+            } else {
+              expect($user.id).to.be.a('number');
+            }
             expect(user.name).to.be('bar');
           });
         });
