@@ -95,7 +95,7 @@ describe('NextModelKnexConnector', function() {
     }
     case 'oracledb': {
       connection = {
-        host: '127.0.0.1',
+        connectString: 'connect-string'
         externalAuth: true,
       };
       break;
@@ -109,6 +109,10 @@ describe('NextModelKnexConnector', function() {
   }));
 
   beforeEach(cleanDb);
+
+  afterEach(function() {
+    connector.knex.destroy();
+  });
 
   def('User', () => $User);
 
