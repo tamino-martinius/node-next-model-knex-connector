@@ -5,6 +5,11 @@
 Add new queries for
 * `$exists`
 
+## v0.?.?
+
+Added CI for more databases
+* `oracledb`
+
 ## v0.3.0
 
 Added Node 4 Support (minimum required node version: 4.3.2)

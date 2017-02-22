@@ -11,7 +11,7 @@ Supports:
 * mysql2
 * mariasql (**not** tested)
 * strong-oracle (**not** tested)
-* oracle (**not** tested)
+* oracle
 * mssql (**not** tested)
 
 ### Roadmap / Where can i contribute
@@ -514,4 +514,5 @@ See [history](TODO) for more details.
 * `0.0.4` **2017-02-16** Updated to NextModel v0.0.4
 * `0.1.0` **2017-02-18** Used next-model from npm instead of Github repo
 * `0.2.0` **2017-02-21** Added new query types
-* `0.3.0` **2017-02-23** Added Node 4 Support
+* `0.3.0` **2017-02-22** Added Node 4 Support
+* `0.?.?` **2017-02-23** Added CI for more databases
