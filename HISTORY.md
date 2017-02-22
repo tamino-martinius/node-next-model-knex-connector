@@ -5,6 +5,10 @@
 Add new queries for
 * `$exists`
 
+## v0.3.0
+
+Added Node 4 Support (minimum required node version: 4.3.2)
+
 ## v0.2.0
 
 Added new query types for **Equation** and **Raw** Queries
