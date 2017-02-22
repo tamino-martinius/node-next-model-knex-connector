@@ -64,72 +64,58 @@ const seedDb = function() {
 };
 
 describe('NextModelKnexConnector', function() {
+  this.timeout(10000);
+  const client = process.env.DB || 'sqlite3';
+  let connection = { filename: ':memory:' };
   switch (process.env.DB) {
-    case 'sqlite': {
-      def('connector', () => new NextModelKnexConnector({
-        client: 'sqlite3',
-        useNullAsDefault: true,
-        connection: {
-          filename: ':memory:',
-        },
-      }));
-      break;
-    }
     case 'mysql': {
-      this.timeout(10000);
-      def('connector', () => new NextModelKnexConnector({
-        client: 'mysql',
-        connection: {
-          host: '127.0.0.1',
-          database: 'test_mysql',
-        },
-      }));
+      connection = {
+        host: '127.0.0.1',
+        user: 'root',
+        password: '',
+      };
       break;
     }
     case 'mysql2': {
-      this.timeout(10000);
-      def('connector', () => new NextModelKnexConnector({
-        client: 'mysql2',
-        connection: {
-          host: '127.0.0.1',
-          database: 'test_mysql2',
-        },
-      }));
+      connection = {
+        host: '127.0.0.1',
+        user: 'root',
+        password: '',
+      };
       break;
     }
     case 'postgres': {
-      this.timeout(10000);
-      def('connector', () => new NextModelKnexConnector({
-        client: 'pg',
-        connection: {
-          host: '127.0.0.1',
-          database: 'test_postgres',
-        },
-      }));
+      connection = {
+        host: '127.0.0.1',
+      };
       break;
     }
     case 'oracledb': {
-      this.timeout(10000);
-      def('connector', () => new NextModelKnexConnector({
-        client: 'pg',
-        connection: {
-          user: 'travis',
-          password: 'travis',
-          host: '127.0.0.1',
-        },
-      }));
+      connection = {
+        host: '127.0.0.1',
+        user: 'travis',
+        password: 'travis',
+      };
       break;
     }
-    default: {
-      def('connector', () => new NextModelKnexConnector({
-        client: 'sqlite3',
-        useNullAsDefault: true,
-        connection: {
-          filename: ':memory:',
-        },
-      }));
-    }
   }
+
+  const connectionSettings = {
+    client,
+    connection,
+    useNullAsDefault: true,
+  };
+
+  if (client != 'sqlite3') {
+    before(function() {
+      return new NextModelKnexConnector(connectionSettings).knex
+        .raw('CREATE DATABASE test;').then(() => {
+          connectionSettings.connection.database = 'test';
+        });
+    });
+  }
+
+  def('connector', () => new NextModelKnexConnector(connectionSettings));
 
   beforeEach(cleanDb);
 
