@@ -80,9 +80,9 @@ describe('NextModelKnexConnector', function() {
       def('connector', () => new NextModelKnexConnector({
         client: 'mysql',
         connection: {
-          host : '127.0.0.1',
+          host: '127.0.0.1',
           user: 'travis',
-          database : 'test_mysql',
+          database: 'test_mysql',
         },
       }));
       break;
@@ -92,9 +92,9 @@ describe('NextModelKnexConnector', function() {
       def('connector', () => new NextModelKnexConnector({
         client: 'mysql2',
         connection: {
-          host : '127.0.0.1',
+          host: '127.0.0.1',
           user: 'travis',
-          database : 'test_mysql2',
+          database: 'test_mysql2',
         },
       }));
       break;
@@ -104,8 +104,21 @@ describe('NextModelKnexConnector', function() {
       def('connector', () => new NextModelKnexConnector({
         client: 'pg',
         connection: {
-          host : '127.0.0.1',
-          database : 'test_postgres',
+          host: '127.0.0.1',
+          database: 'test_postgres',
+        },
+      }));
+      break;
+    }
+    case 'oracledb': {
+      this.timeout(10000);
+      def('connector', () => new NextModelKnexConnector({
+        client: 'pg',
+        connection: {
+          user: 'tavis',
+          password: 'travis',
+          host: '127.0.0.1',
+          database: 'XE',
         },
       }));
       break;
