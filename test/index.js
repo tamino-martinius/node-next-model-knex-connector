@@ -95,8 +95,10 @@ describe('NextModelKnexConnector', function() {
     }
     case 'oracledb': {
       connection = {
-        connectString: 'connect-string',
-        externalAuth: true,
+        user: 'travis',
+        password: 'travis',
+        connectString : "localhost/XE",
+        stmtCacheSize : 0,
       };
       break;
     }
