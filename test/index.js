@@ -82,6 +82,7 @@ describe('NextModelKnexConnector', function() {
         connection: {
           host: '127.0.0.1',
           user: 'travis',
+          password: '',
           database: 'test_mysql',
         },
       }));
@@ -94,6 +95,7 @@ describe('NextModelKnexConnector', function() {
         connection: {
           host: '127.0.0.1',
           user: 'travis',
+          password: '',
           database: 'test_mysql2',
         },
       }));
@@ -115,7 +117,7 @@ describe('NextModelKnexConnector', function() {
       def('connector', () => new NextModelKnexConnector({
         client: 'pg',
         connection: {
-          user: 'tavis',
+          user: 'travis',
           password: 'travis',
           host: '127.0.0.1',
           database: 'XE',
