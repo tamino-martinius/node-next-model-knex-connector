@@ -6,6 +6,7 @@ const expect = require('expect.js');
 
 const lodash = require('lodash');
 const omit = lodash.omit;
+const isArray = lodash.isArray;
 
 def('BaseModel', () => class BaseModel extends NextModel {
   static get connector() {
@@ -49,6 +50,14 @@ const cleanDb = function() {
   return Promise.resolve()
   .then(() => $connector.knex.schema.dropTableIfExists('users'))
 };
+
+const cleanRows = function(rows) {
+  if (isArray(rows)) {
+    return rows.map(row => omit(row, 'ROWNUM_'));
+  } else {
+    return omit(rows, 'ROWNUM_');
+  }
+}
 
 const seedTable = function() {
   return Promise.resolve()
@@ -151,7 +160,7 @@ describe('NextModelKnexConnector', function() {
           def('User', () => $User.skip(2));
 
           it('skips rows', function() {
-            return $subject.then(rows => expect(omit(rows, 'ROWNUM_')).to.eql([user3]));
+            return $subject.then(rows => expect(cleanRows(rows)).to.eql([user3]));
           });
         });
 
@@ -514,7 +523,7 @@ describe('NextModelKnexConnector', function() {
           def('User', () => $User.skip(2));
 
           it('skips rows', function() {
-            return $subject.then(rows => expect(omit(rows, 'ROWNUM_')).to.eql([user3]));
+            return $subject.then(rows => expect(cleanRows(rows)).to.eql([user3]));
           });
         });
 
@@ -562,7 +571,7 @@ describe('NextModelKnexConnector', function() {
           def('User', () => $User.skip(2));
 
           it('skips rows', function() {
-            return $subject.then(rows => expect(omit(rows, 'ROWNUM_')).to.eql(user3));
+            return $subject.then(rows => expect(cleanRows(rows)).to.eql(user3));
           });
         });
 
