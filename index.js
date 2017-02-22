@@ -2,24 +2,22 @@
 
 const Knex = require('knex');
 
-const {
-  underscore,
-  pluralize,
-} = require('inflection');
+const inflection = require('inflection');
+const underscore = inflection.underscore;
+const pluralize = inflection.pluralize;
 
-const {
-  filter,
-  first,
-  forEach,
-  includes,
-  isEmpty,
-  isPlainObject,
-  keys,
-  omit,
-  startsWith,
-  upperFirst,
-  values,
-} = require('lodash');
+const lodash = require('lodash');
+const filter = lodash.filter;
+const first = lodash.first;
+const forEach = lodash.forEach;
+const includes = lodash.includes;
+const isEmpty = lodash.isEmpty;
+const isPlainObject = lodash.isPlainObject;
+const keys = lodash.keys;
+const omit = lodash.omit;
+const startsWith = lodash.startsWith;
+const upperFirst = lodash.upperFirst;
+const values = lodash.values;
 
 module.exports = class NextModelKnexConnector {
 
@@ -123,13 +121,14 @@ module.exports = class NextModelKnexConnector {
 
   // Private functions
 
-  _selectQuery(Klass, reverse = false) {
+  _selectQuery(Klass, reverse) {
     let query = this.query(Klass);
     query = reverse ? this._reverse(Klass, query) : this._order(Klass, query);
     return query.select(Klass.tableName + '.*');
   }
 
-  _buildQuery(currentQuery, scope, queryType = 'where', args = null) {
+  _buildQuery(currentQuery, scope, queryTypeParam, args) {
+    const queryType = queryTypeParam || 'where';
     if (isEmpty(scope) && isEmpty(args)) return currentQuery;
     if (isPlainObject(scope)) {
       const scopeKeys = keys(scope);
