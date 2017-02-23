@@ -99,10 +99,19 @@ describe('NextModelKnexConnector', function() {
       };
       break;
     }
-    case 'postgres': {
+    case 'mariasql': {
       connection = {
         host: '127.0.0.1',
-        database: 'test_postgres',
+        user: 'root',
+        password: '',
+        database: 'test_mariasql',
+      };
+      break;
+    }
+    case 'pg': {
+      connection = {
+        host: '127.0.0.1',
+        database: 'test_pg',
       };
       break;
     }
