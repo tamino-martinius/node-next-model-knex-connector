@@ -27,7 +27,7 @@ env:
   # - DB=mysql2
   # - DB=pg
   # - DB=oracledb ORACLE_HOME=/u01/app/oracle/product/11.2.0/xe ORACLE_SID=XE OCI_LIB_DIR=/u01/app/oracle/product/11.2.0/xe/lib LD_LIBRARY_PATH=/u01/app/oracle/product/11.2.0/xe/lib
-  - DB=strong-oracle ORACLE_HOME=/u01/app/oracle/product/11.2.0/xe ORACLE_SID=XE OCI_LIB_DIR=/u01/app/oracle/product/11.2.0/xe/lib LD_LIBRARY_PATH=/u01/app/oracle/product/11.2.0/xe/lib
+  - DB=strong-oracle ORACLE_HOME=/u01/app/oracle/product/11.2.0/xe ORACLE_SID=XE OCI_LIB_DIR=/u01/app/oracle/product/11.2.0/xe/lib OCI_HOME=/u01/app/oracle/product/11.2.0/xe LD_LIBRARY_PATH=/u01/app/oracle/product/11.2.0/xe/lib
 
 before_install:
   - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'CREATE DATABASE IF NOT EXISTS test_mysql;'; fi"
