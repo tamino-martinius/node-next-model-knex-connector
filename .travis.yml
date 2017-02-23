@@ -37,8 +37,8 @@ before_install:
   - sh -c "if [ '$DB' = 'oracledb' ]; then bash ./accept_the_license_agreement_for_oracledb_xe_11g_and_install.sh; fi"
   - sh -c "if [ '$DB' = 'strong-oracle' ]; then wget https://raw.githubusercontent.com/Vincit/travis-oracledb-xe/master/accept_the_license_agreement_for_oracledb_xe_11g_and_install.sh; fi"
   - sh -c "if [ '$DB' = 'strong-oracle' ]; then bash ./accept_the_license_agreement_for_oracledb_xe_11g_and_install.sh; fi"
-  - mkdir /u01/app/oracle/product/11.2.0/xe/sdk
-  - ln -s /u01/app/oracle/product/11.2.0/xe/rdbms/public /u01/app/oracle/product/11.2.0/xe/sdk/include
+  - sh -c "if [ '$DB' = 'strong-oracle' ]; then sudo mkdir /u01/app/oracle/product/11.2.0/xe/sdk; fi"
+  - sh -c "if [ '$DB' = 'strong-oracle' ]; then sudo ln -s /u01/app/oracle/product/11.2.0/xe/rdbms/public /u01/app/oracle/product/11.2.0/xe/sdk/include; fi"
 
 before_script:
   - sh -c "npm install $DB"
