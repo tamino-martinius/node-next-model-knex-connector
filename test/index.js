@@ -99,14 +99,23 @@ describe('NextModelKnexConnector', function() {
       };
       break;
     }
-    case 'postgres': {
+    case 'pg': {
       connection = {
         host: '127.0.0.1',
-        database: 'test_postgres',
+        database: 'test_pg',
       };
       break;
     }
     case 'oracledb': {
+      connection = {
+        user: 'travis',
+        password: 'travis',
+        connectString : "localhost/XE",
+        stmtCacheSize : 0,
+      };
+      break;
+    }
+    case 'strong-oracle': {
       connection = {
         user: 'travis',
         password: 'travis',
