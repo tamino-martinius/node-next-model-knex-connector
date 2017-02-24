@@ -495,7 +495,7 @@ select "users".* from "users" where ("age" = 18)
 ~~~
 
 ~~~js
-User.where({ $notBetween: {
+User.where({ $raw: {
   ['age = ?']: [18],
   ['name = ?']: ['foo'],
 }});
