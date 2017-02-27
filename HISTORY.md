@@ -10,6 +10,10 @@ Add new queries for
 Added CI for more databases
 * `oracledb`
 
+## v0.3.1
+
+Updated next-model dependency to `v0.3.0`
+
 ## v0.3.0
 
 Added Node 4 Support (minimum required node version: 4.3.2)

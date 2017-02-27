@@ -515,4 +515,4 @@ See [history](TODO) for more details.
 * `0.1.0` **2017-02-18** Used next-model from npm instead of Github repo
 * `0.2.0` **2017-02-21** Added new query types
 * `0.3.0` **2017-02-22** Added Node 4 Support
-* `0.?.?` **2017-02-23** Added CI for more databases
+* `0.3.1` **2017-02-28** Updated next-model dependency
