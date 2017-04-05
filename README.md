@@ -517,3 +517,4 @@ See [history](HISTORY.md) for more details.
 * `0.3.0` **2017-02-22** Added Node 4 Support
 * `0.3.1` **2017-02-27** Updated next-model dependency
 * `0.3.2` **2017-02-28** Updated next-model dependency
+* `0.3.3` **2017-04-05** Updated next-model dependency

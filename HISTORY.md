@@ -10,6 +10,10 @@ Add new queries for
 Added CI for more databases
 * `oracledb`
 
+## v0.3.3
+
+Updated next-model dependency to `v0.4.1`
+
 ## v0.3.2
 
 Updated next-model dependency to `v0.4.0`
