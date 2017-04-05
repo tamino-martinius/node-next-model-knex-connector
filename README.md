@@ -506,7 +506,7 @@ select "users".* from "users" where ("age" = 18 and "name" = 'foo')
 
 ## Changelog
 
-See [history](TODO) for more details.
+See [history](HISTORY.md) for more details.
 
 * `0.0.1` **2017-02-05** First release compatible with NextModel 0.0.1
 * `0.0.2` **2017-02-12** Added more complex query types
