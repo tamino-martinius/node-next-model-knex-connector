@@ -183,8 +183,13 @@ export class NextModelKnexConnector<S extends Identifiable> implements Connector
     return this.propertyFilter(query, <FilterProperty<S>>filter);
   }
 
-  query(model: ModelStatic<S>): Promise<ModelConstructor<S>[]> {
-
+  private collection(model: ModelStatic<S>): Knex.QueryBuilder {
+    const table = this.table(model);
+    const query = this
+      .filter(table, model.filter)
+      .limit(model.limit)
+      .offset(model.skip);
+    return query;
   }
 
   count(model: ModelStatic<S>): Promise<number> {
