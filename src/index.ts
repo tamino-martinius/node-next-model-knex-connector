@@ -74,6 +74,14 @@ export class NextModelKnexConnector<S extends Identifiable> implements Connector
     return query.whereNotNull(key);
   }
 
+  private betweenFilter(query: Knex.QueryBuilder, filter: FilterBetween<S>): Knex.QueryBuilder {
+    if (Object.keys(filter).length !== 1) throw '[TODO] Return proper error';
+    for (const key in filter) {
+      return query.andWhereBetween(key, [<any>filter[key].from, <any>filter[key].to])
+    }
+    throw '[TODO] Should not reach error';
+  }
+
   private rawFilter(query: Knex.QueryBuilder, filter: FilterRaw): Knex.QueryBuilder {
     throw '[TODO] Not yet implemented';
   }
