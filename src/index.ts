@@ -66,6 +66,10 @@ export class NextModelKnexConnector<S extends Identifiable> implements Connector
     throw '[TODO] Should not reach error';
   }
 
+  private nullFilter(query: Knex.QueryBuilder, key: keyof S): Knex.QueryBuilder {
+    return query.whereNull(key);
+  }
+
   private rawFilter(query: Knex.QueryBuilder, filter: FilterRaw): Knex.QueryBuilder {
     throw '[TODO] Not yet implemented';
   }
