@@ -192,8 +192,16 @@ export class NextModelKnexConnector<S extends Identifiable> implements Connector
     return query;
   }
 
-  count(model: ModelStatic<S>): Promise<number> {
-
+  async query(model: ModelStatic<S>): Promise<ModelConstructor<S>[]> {
+    let query = this.collection(model);
+    for (const order of model.order) {
+      for (const key in order) {
+        const direction = order[key] === OrderDirection.asc ? 'asc' : 'desc';
+        query = query.orderBy(key, direction);
+      }
+    }
+    const rows: S[] = await this.collection(model).select('*');
+    return rows.map(row => new model(row));
   }
 
   updateAll(model: ModelStatic<S>, attrs: Partial<S>): Promise<ModelConstructor<S>[]> {
