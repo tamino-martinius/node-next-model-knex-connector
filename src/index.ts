@@ -90,6 +90,47 @@ export class NextModelKnexConnector<S extends Identifiable> implements Connector
     throw '[TODO] Should not reach error';
   }
 
+  private gtFilter(query: Knex.QueryBuilder, filter: FilterCompare<S>): Knex.QueryBuilder {
+    if (Object.keys(filter).length !== 1) throw '[TODO] Return proper error';
+    for (const key in filter) {
+      return query.where(key, '>', <any>filter[key]);
+    }
+    throw '[TODO] Should not reach error';
+  }
+
+  private gteFilter(query: Knex.QueryBuilder, filter: FilterCompare<S>): Knex.QueryBuilder {
+    if (Object.keys(filter).length !== 1) throw '[TODO] Return proper error';
+    for (const key in filter) {
+      const value: BaseType = <any>filter[key];
+      if (value !== undefined) {
+        return query.where(key, '>=', value);
+      }
+    }
+    throw '[TODO] Should not reach error';
+  }
+
+  private ltFilter(query: Knex.QueryBuilder, filter: FilterCompare<S>): Knex.QueryBuilder {
+    if (Object.keys(filter).length !== 1) throw '[TODO] Return proper error';
+    for (const key in filter) {
+      const value: BaseType = <any>filter[key];
+      if (value !== undefined) {
+        return query.where(key, '<', value);
+      }
+    }
+    throw '[TODO] Should not reach error';
+  }
+
+  private lteFilter(query: Knex.QueryBuilder, filter: FilterCompare<S>): Knex.QueryBuilder {
+    if (Object.keys(filter).length !== 1) throw '[TODO] Return proper error';
+    for (const key in filter) {
+      const value: BaseType = <any>filter[key];
+      if (value !== undefined) {
+        return query.where(key, '<=', value);
+      }
+    }
+    throw '[TODO] Should not reach error';
+  }
+
   private rawFilter(query: Knex.QueryBuilder, filter: FilterRaw): Knex.QueryBuilder {
     throw '[TODO] Not yet implemented';
   }
