@@ -204,8 +204,14 @@ export class NextModelKnexConnector<S extends Identifiable> implements Connector
     return rows.map(row => new model(row));
   }
 
-  updateAll(model: ModelStatic<S>, attrs: Partial<S>): Promise<ModelConstructor<S>[]> {
-
+  async count(model: ModelStatic<S>): Promise<number> {
+    const rows: S[] = await this.collection(model).count();
+    if (rows.length >= 0) {
+      for (const key in rows[0]) {
+        return <any>rows[0][key];
+      }
+    }
+    throw '[TODO] Should not reach error';
   }
 
   deleteAll(model: ModelStatic<S>): Promise<ModelConstructor<S>[]> {
