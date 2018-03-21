@@ -27,6 +27,30 @@ export class NextModelKnexConnector<S extends Identifiable> implements Connector
   }
 
 
+  query(model: ModelStatic<S>): Promise<ModelConstructor<S>[]> {
+
+  }
+
+  count(model: ModelStatic<S>): Promise<number> {
+
+  }
+
+  updateAll(model: ModelStatic<S>, attrs: Partial<S>): Promise<ModelConstructor<S>[]> {
+
+  }
+
+  deleteAll(model: ModelStatic<S>): Promise<ModelConstructor<S>[]> {
+
+  }
+
+  delete(instance: ModelConstructor<S>): Promise<ModelConstructor<S>> {
+
+  }
+
+  execute(query: string, bindings: Bindings): Promise<any[]> {
+
+  }
+
 };
 
 export default NextModelKnexConnector;
