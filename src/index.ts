@@ -58,6 +58,14 @@ export class NextModelKnexConnector<S extends Identifiable> implements Connector
     throw '[TODO] Should not reach error';
   }
 
+  private notInFilter(query: Knex.QueryBuilder, filter: FilterIn<S>): Knex.QueryBuilder {
+    if (Object.keys(filter).length !== 1) throw '[TODO] Return proper error';
+    for (const key in filter) {
+      return query.whereNotIn(key, <any>filter[key]);
+    }
+    throw '[TODO] Should not reach error';
+  }
+
   private rawFilter(query: Knex.QueryBuilder, filter: FilterRaw): Knex.QueryBuilder {
     throw '[TODO] Not yet implemented';
   }
