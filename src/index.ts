@@ -14,6 +14,14 @@ export class NextModelKnexConnector<S extends Identifiable> implements Connector
     this.knex = Knex(options);
   }
 
+  private tableName(model: ModelStatic<S>): string {
+    if (model.collectionName !== undefined) {
+      return model.collectionName;
+    } else {
+      return model.lowerModelName;
+    }
+  }
+
 };
 
 export default NextModelKnexConnector;
