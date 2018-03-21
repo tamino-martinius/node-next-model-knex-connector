@@ -247,8 +247,13 @@ export class NextModelKnexConnector<S extends Identifiable> implements Connector
     return instance;
   }
 
-  delete(instance: ModelConstructor<S>): Promise<ModelConstructor<S>> {
-
+  async delete(instance: ModelConstructor<S>): Promise<ModelConstructor<S>> {
+    const model = instance.model;
+    const identifier = model.identifier;
+    const table = this.table(model);
+    await table.where({ [identifier]: instance.id }).delete();
+    instance.id = undefined;
+    return instance;
   }
 
   execute(query: string, bindings: Bindings): Promise<any[]> {
