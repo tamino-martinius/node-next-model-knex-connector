@@ -219,6 +219,13 @@ export class NextModelKnexConnector<S extends Identifiable> implements Connector
     return rows.map(row => new model(row));
   }
 
+  async deleteAll(model: ModelStatic<S>): Promise<ModelConstructor<S>[]> {
+    const rows: S[] = await this.collection(model).delete('*');
+    return rows.map(row => {
+      const instance = new model(row);
+      instance.id = undefined;
+      return instance;
+    });
   }
 
   async create(instance: ModelConstructor<S>): Promise<ModelConstructor<S>> {
