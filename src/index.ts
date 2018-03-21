@@ -70,6 +70,10 @@ export class NextModelKnexConnector<S extends Identifiable> implements Connector
     return query.whereNull(key);
   }
 
+  private notNullFilter(query: Knex.QueryBuilder, key: keyof S): Knex.QueryBuilder {
+    return query.whereNotNull(key);
+  }
+
   private rawFilter(query: Knex.QueryBuilder, filter: FilterRaw): Knex.QueryBuilder {
     throw '[TODO] Not yet implemented';
   }
