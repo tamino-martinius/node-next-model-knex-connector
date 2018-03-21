@@ -138,7 +138,7 @@ export class NextModelKnexConnector<S extends Identifiable> implements Connector
   }
 
   private rawFilter(query: Knex.QueryBuilder, filter: FilterRaw): Knex.QueryBuilder {
-    throw '[TODO] Not yet implemented';
+    return query.whereRaw(filter.$query, <any>filter.$bindings);
   }
 
   private specialFilter(query: Knex.QueryBuilder, filter: FilterSpecial<S>): Knex.QueryBuilder {
