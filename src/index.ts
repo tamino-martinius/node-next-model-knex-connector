@@ -4,7 +4,15 @@ import {
   ConnectorConstructor,
   ModelStatic,
   ModelConstructor,
-  Bindings
+  Bindings,
+  FilterSpecial,
+  FilterProperty,
+  Filter,
+  FilterIn,
+  FilterBetween,
+  FilterCompare,
+  FilterRaw,
+  BaseType,
 } from '@next-model/core';
 
 export class NextModelKnexConnector<S extends Identifiable> implements ConnectorConstructor<S> {
