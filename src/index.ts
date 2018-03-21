@@ -53,6 +53,15 @@ export class NextModelKnexConnector<S extends Identifiable> implements Connector
     return instance;
   }
 
+  async update(instance: ModelConstructor<S>): Promise<ModelConstructor<S>> {
+    const model = instance.model;
+    const identifier = model.identifier;
+    const table = this.table(model);
+    const data = instance.attributes;
+    await table.where({ [identifier]: instance.id }).update(data, identifier);
+    return instance;
+  }
+
   delete(instance: ModelConstructor<S>): Promise<ModelConstructor<S>> {
 
   }
