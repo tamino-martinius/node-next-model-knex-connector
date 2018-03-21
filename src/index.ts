@@ -256,8 +256,9 @@ export class NextModelKnexConnector<S extends Identifiable> implements Connector
     return instance;
   }
 
-  execute(query: string, bindings: Bindings): Promise<any[]> {
-
+  async execute(query: string, bindings: Bindings): Promise<any[]> {
+    const rows: any[] = await this.knex.raw(query, bindings);
+    return rows;
   }
 
 
