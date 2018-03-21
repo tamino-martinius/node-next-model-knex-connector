@@ -38,9 +38,9 @@
   "scripts": {
     "coverage": "rm -rf coverage* && jest --coverage && node remap_coverage.js && rm -rf coverage_jest_raw*",
     "test": "jest",
-    "build": "rm -rf dist/* && tsc",
     "watch": "tsc -w",
-    "ci": "npm run coverage && codecov"
+    "ci": "npm run coverage && codecov",
+    "prepublish": "rm -rf dist/* && tsc"
   },
   "devDependencies": {
     "@types/knex": "^0.14.9",
