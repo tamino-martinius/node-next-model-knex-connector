@@ -50,6 +50,47 @@ export class NextModelKnexConnector<S extends Identifiable> implements Connector
     throw '[TODO] Not yet implemented';
   }
 
+  private specialFilter(query: Knex.QueryBuilder, filter: FilterSpecial<S>): Knex.QueryBuilder {
+    if (Object.keys(filter).length !== 1) throw '[TODO] Return proper error';
+    if (filter.$and !== undefined)
+      return this.andFilter(query, filter.$and);
+    if (filter.$or !== undefined)
+      return this.orFilter(query, filter.$or);
+    if (filter.$not !== undefined)
+      return this.notFilter(query, filter.$not);
+    if (filter.$in !== undefined)
+      return this.inFilter(query, filter.$in);
+    if (filter.$notIn !== undefined)
+      return this.notInFilter(query, filter.$notIn);
+    if (filter.$null !== undefined)
+      return this.nullFilter(query, filter.$null);
+    if (filter.$notNull !== undefined)
+      return this.notNullFilter(query, filter.$notNull);
+    if (filter.$between !== undefined)
+      return this.betweenFilter(query, filter.$between);
+    if (filter.$notBetween !== undefined)
+      return this.notBetweenFilter(query, filter.$notBetween);
+    if (filter.$gt !== undefined)
+      return this.gtFilter(query, filter.$gt);
+    if (filter.$gte !== undefined)
+      return this.gteFilter(query, filter.$gte);
+    if (filter.$lt !== undefined)
+      return this.ltFilter(query, filter.$lt);
+    if (filter.$lte !== undefined)
+      return this.lteFilter(query, filter.$lte);
+    if (filter.$raw !== undefined)
+      return this.rawFilter(query, filter.$raw);
+    throw '[TODO] Should not reach error';
+  }
+
+  private filter(query: Knex.QueryBuilder, filter: Filter<S>): Knex.QueryBuilder {
+    for (const key in filter) {
+      if (key.startsWith('$')) {
+        return this.specialFilter(query, <FilterSpecial<S>>filter);
+      }
+    }
+    return this.propertyFilter(query, <FilterProperty<S>>filter);
+  }
 
   query(model: ModelStatic<S>): Promise<ModelConstructor<S>[]> {
 
