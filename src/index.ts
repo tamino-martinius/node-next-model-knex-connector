@@ -34,6 +34,22 @@ export class NextModelKnexConnector<S extends Identifiable> implements Connector
     return this.knex(this.tableName(model));
   }
 
+  private andFilter(query: Knex.QueryBuilder, filters: Filter<S>[]): Knex.QueryBuilder {
+    throw '[TODO] Not yet implemented';
+  }
+
+  private notFilter(query: Knex.QueryBuilder, filter: Filter<S>): Knex.QueryBuilder {
+    throw '[TODO] Not yet implemented';
+  }
+
+  private orFilter(query: Knex.QueryBuilder, filters: Filter<S>[]): Knex.QueryBuilder {
+    throw '[TODO] Not yet implemented';
+  }
+
+  private rawFilter(query: Knex.QueryBuilder, filter: FilterRaw): Knex.QueryBuilder {
+    throw '[TODO] Not yet implemented';
+  }
+
 
   query(model: ModelStatic<S>): Promise<ModelConstructor<S>[]> {
 
