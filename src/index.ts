@@ -22,6 +22,11 @@ export class NextModelKnexConnector<S extends Identifiable> implements Connector
     }
   }
 
+  private table(model: ModelStatic<S>): Knex.QueryBuilder {
+    return this.knex(this.tableName(model));
+  }
+
+
 };
 
 export default NextModelKnexConnector;
