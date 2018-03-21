@@ -13,6 +13,7 @@ import {
   FilterCompare,
   FilterRaw,
   BaseType,
+  OrderDirection,
 } from '@next-model/core';
 
 export class NextModelKnexConnector<S extends Identifiable> implements ConnectorConstructor<S> {
