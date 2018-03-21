@@ -46,7 +46,7 @@ export class NextModelKnexConnector<S extends Identifiable> implements Connector
   }
 
   private notFilter(query: Knex.QueryBuilder, filter: Filter<S>): Knex.QueryBuilder {
-    throw '[TODO] Not yet implemented';
+    return query.whereNot(this.filter(query, filter));
   }
 
   private orFilter(query: Knex.QueryBuilder, filters: Filter<S>[]): Knex.QueryBuilder {
