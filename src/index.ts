@@ -27,7 +27,7 @@ export class NextModelKnexConnector<S extends Identifiable> implements Connector
     if (model.collectionName !== undefined) {
       return model.collectionName;
     } else {
-      return model.lowerModelName;
+      return model.pluralModelName;
     }
   }
 
