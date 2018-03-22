@@ -74,3 +74,35 @@ class User extends NextModel<UserSchema>() {
     };
   }
 };
+
+let user1: User;
+let user2: User;
+let user3: User;
+
+async function cleanDb(): Promise<Knex.SchemaBuilder> {
+  user1 = user2 = user3 = undefined;
+  return connector.knex.schema.dropTableIfExists('users');
+};
+
+async function seedTable(): Promise<Knex.SchemaBuilder> {
+  return connector.knex.schema.createTable('users', (table) => {
+    table.increments('id');
+    table.string('name');
+    table.integer('age');
+  });
+};
+
+async function seedData() {
+  user1 = await new User({ name: 'foo', age: 18 }).save();
+  user2 = await new User({ name: 'foo', age: 21 }).save();
+  user3 = await new User({ name: 'bar', age: 21 }).save();
+  return
+};
+
+async function seedDb(): Promise<Knex.SchemaBuilder> {
+  await seedTable();
+  await seedData();
+}
+
+beforeEach(cleanDb);
+
