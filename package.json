@@ -60,8 +60,7 @@
     "sqlite3": "^4.0.0"
   },
   "dependencies": {
-    "knex": "^0.14.4",
-    "lodash": "^4.17.5"
+    "knex": "^0.14.4"
   },
   "jest": {
     "transform": {
