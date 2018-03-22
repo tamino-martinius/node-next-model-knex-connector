@@ -56,7 +56,7 @@
     "remap-istanbul": "^0.11.0",
     "ts-jest": "^22.4.1",
     "typescript": "^2.7.2",
-    "@next-model/core": "^1.0.0-alpha.5",
+    "@next-model/core": "^1.0.0-alpha.6",
     "sqlite3": "^4.0.0"
   },
   "dependencies": {
