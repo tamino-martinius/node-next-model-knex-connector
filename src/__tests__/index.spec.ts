@@ -106,3 +106,31 @@ async function seedDb(): Promise<Knex.SchemaBuilder> {
 
 beforeEach(cleanDb);
 
+describe('NextModelKnexConnector', () => {
+  describe('#query', () => {
+    let Klass: typeof User = User;
+    const subject = () => connector.query(Klass);
+
+    it('throws error', () => {
+      expect(subject).toThrow('test');
+    });
+
+    context('with seeded table', {
+      definitions() {
+        seedTable();
+      },
+      tests() {
+        expect(subject()).toEqual([]);
+      }
+    });
+
+    context('with seeded data', {
+      definitions() {
+        seedDb();
+      },
+      tests() {
+        expect(subject()).toEqual([user1, user2, user3]);
+      }
+    });
+  });
+});
