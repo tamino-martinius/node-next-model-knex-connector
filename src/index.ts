@@ -195,10 +195,13 @@ export class NextModelKnexConnector<S extends Identifiable> implements Connector
 
   private collection(model: ModelStatic<S>): Knex.QueryBuilder {
     const table = this.table(model);
-    const query = this
-      .filter(table, model.filter)
-      .limit(model.limit)
-      .offset(model.skip);
+    let query = this.filter(table, model.filter);
+    if (model.limit < Number.MAX_SAFE_INTEGER) {
+      query = query.limit(model.limit);
+    }
+    if (model.skip > 0) {
+      query = query.offset(model.skip);
+    }
     return query;
   }
 
