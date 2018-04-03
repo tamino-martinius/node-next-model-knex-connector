@@ -80,6 +80,10 @@ class User extends NextModel<UserSchema>() {
       age: { type: 'integer' },
     };
   }
+
+  static get connector(): ConnectorConstructor<UserSchema> {
+    return connector;
+  }
 };
 
 let user1: Partial<UserSchema>;
