@@ -618,4 +618,51 @@ describe('NextModelKnexConnector', () => {
       }
     });
   });
+
+  describe('#execute(sql, bindings)', () => {
+    let sql: string = 'SELECT * FROM users WHERE id = :id';
+    let id = () => 0
+    const subject = () => connector.execute(sql, { id: id() });
+
+    it('rejects with error', async () => {
+      try {
+        const data = await subject();
+        expect(true).toBeFalsy(); // Should not reach
+      } catch (error) {
+        expect(error.message).toContain('SQLITE_ERROR: no such table: users');
+      }
+    });
+
+    context('with seeded table', {
+      definitions: seedTable,
+      tests() {
+        it('promises empty array', async () => {
+          const data = await subject();
+          return expect(data).toEqual([]);
+        });
+
+        context('with seeded data', {
+          definitions: seedData,
+          tests() {
+            it('promises empty array', async () => {
+              const data = await subject();
+              expect(data).toEqual([]);
+            });
+
+            context('with queryfor data', {
+              definitions() {
+                id = validId;
+              },
+              tests() {
+                it('promises array of rows', async () => {
+                  const data = await subject();
+                  expect(data).toEqual([validUser().attributes]);
+                });
+              }
+            });
+          }
+        });
+      }
+    });
+  });
 });
