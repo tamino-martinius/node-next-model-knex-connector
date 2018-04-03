@@ -213,8 +213,12 @@ export class NextModelKnexConnector<S extends Identifiable> implements Connector
         query = query.orderBy(key, direction);
       }
     }
-    const rows: S[] = await this.collection(model).select('*');
-    return rows.map(row => new model(row));
+    try {
+      const rows: S[] = await query.select('*');
+      return rows.map(row => new model(row));
+    } catch (error) {
+      throw error;
+    }
   }
 
   async count(model: ModelStatic<S>): Promise<number> {
