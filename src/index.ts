@@ -40,19 +40,28 @@ export class NextModelKnexConnector<S extends Identifiable> implements Connector
   }
 
   private andFilter(query: Knex.QueryBuilder, filters: Filter<S>[]): Knex.QueryBuilder {
+    const self = this;
     for (const filter of filters) {
-      query = query.andWhere(this.filter(query, filter));
+      query = query.andWhere(function () {
+        self.filter(this, filter);
+      });
     }
     return query;
   }
 
   private notFilter(query: Knex.QueryBuilder, filter: Filter<S>): Knex.QueryBuilder {
-    return query.whereNot(this.filter(query, filter));
+    const self = this;
+    return query.whereNot(function () {
+      self.filter(this, filter);
+    });
   }
 
   private orFilter(query: Knex.QueryBuilder, filters: Filter<S>[]): Knex.QueryBuilder {
+    const self = this;
     for (const filter of filters) {
-      query = query.orWhere(this.filter(query, filter));
+      query = query.orWhere(function () {
+        self.filter(this, filter);
+      });
     }
     return query;
   }
