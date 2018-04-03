@@ -232,21 +232,21 @@ export class NextModelKnexConnector<S extends Identifiable> implements Connector
   }
 
   async updateAll(model: ModelStatic<S>, attrs: Partial<S>): Promise<number> {
-    const count: number = await this.collection(model).update(attrs, '*');
+    const count: number = await this.collection(model).update(attrs);
     return count;
   }
 
   async deleteAll(model: ModelStatic<S>): Promise<number> {
-    const count: number = await this.collection(model).delete('*');
+    const count: number = await this.collection(model).del();
     return count;
   }
 
   async create(instance: ModelConstructor<S>): Promise<ModelConstructor<S>> {
     const model = instance.model;
-    const identifier = model.identifier;
+    // const identifier = model.identifier;
     const table = this.table(model);
     const data = instance.attributes;
-    const ids = await table.insert(data, identifier);
+    const ids = await table.insert(data);
     instance.id = ids[0];
     return instance;
   }
@@ -256,7 +256,7 @@ export class NextModelKnexConnector<S extends Identifiable> implements Connector
     const identifier = model.identifier;
     const table = this.table(model);
     const data = instance.attributes;
-    await table.where({ [identifier]: instance.id }).update(data, identifier);
+    await table.where({ [identifier]: instance.id }).update(data);
     return instance;
   }
 
