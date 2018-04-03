@@ -44,7 +44,7 @@ switch (process.env.DB) {
     break;
   }
   case 'oracledb': {
-    connection = {
+    connection = <Connection>{
       user: 'travis',
       password: 'travis',
       connectString: "localhost/XE",
@@ -82,9 +82,9 @@ class User extends NextModel<UserSchema>() {
   }
 };
 
-let user1: User;
-let user2: User;
-let user3: User;
+let user1: Partial<UserSchema>;
+let user2: Partial<UserSchema>;
+let user3: Partial<UserSchema>;
 
 async function cleanDb(): Promise<Knex.SchemaBuilder> {
   user1 = user2 = user3 = undefined;
