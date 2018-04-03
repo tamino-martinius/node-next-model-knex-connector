@@ -125,7 +125,8 @@ async function seedDb(): Promise<Knex.SchemaBuilder> {
 afterEach(cleanDb);
 
 const randomIndex = faker.random.number(2);
-const validId = () => [user1, user2, user3][randomIndex].id;
+const validUser = () => [user1, user2, user3][randomIndex];
+const validId = () => validUser().id;
 
 const filterSpecGroups: FilterSpecGroup = {
   'none': [
