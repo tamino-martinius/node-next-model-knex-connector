@@ -1,11 +1,18 @@
 import Knex from 'knex';
-import NextModel, { Connector } from '@next-model/core';
+import {
+  NextModel,
+  ConnectorConstructor,
+  Filter,
+} from '@next-model/core';
 import NextModelKnexConnector from '..';
 
 import {
   context,
   Connection,
+  FilterSpecGroup,
 } from './types';
+
+import faker from 'faker';
 
 const client = process.env.DB || 'sqlite3';
 const isOracle = client === 'oracledb';
