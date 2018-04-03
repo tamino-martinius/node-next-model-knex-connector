@@ -118,7 +118,8 @@ async function seedDb(): Promise<Knex.SchemaBuilder> {
   await seedData();
 };
 
-beforeEach(cleanDb);
+afterEach(cleanDb);
+
 
 describe('NextModelKnexConnector', () => {
   describe('#query', () => {
