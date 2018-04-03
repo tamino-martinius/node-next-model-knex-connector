@@ -1,4 +1,8 @@
 import Knex from 'knex';
+import {
+  Filter,
+  Identifiable,
+} from '@next-model/core';
 
 export interface Context {
   definitions: () => void;
@@ -19,3 +23,12 @@ export const context = (description: string, { definitions, tests, reset }: Cont
 };
 
 export type Connection = Knex.Sqlite3ConnectionConfig | Knex.MySqlConnectionConfig;
+
+export interface FilterSpecs {
+  filter: () => Filter<any>;
+  results: (() => number[]) | string
+};
+
+export interface FilterSpecGroup {
+  [key: string]: FilterSpecs[];
+};
