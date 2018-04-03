@@ -4,7 +4,7 @@ import {
   ConnectorConstructor,
   Filter,
 } from '@next-model/core';
-import NextModelKnexConnector from '..';
+import KnexConnector from '..';
 
 import {
   context,
@@ -66,7 +66,7 @@ interface UserSchema {
   age: number;
 };
 
-const connector = new NextModelKnexConnector<UserSchema>(config);
+const connector = new KnexConnector<UserSchema>(config);
 
 class User extends NextModel<UserSchema>() {
   id: number;
@@ -231,7 +231,7 @@ const filterSpecGroups: FilterSpecGroup = {
   ],
 };
 
-describe('NextModelKnexConnector', () => {
+describe('KnexConnector', () => {
   describe('#query(Klass)', () => {
     let Klass: typeof User = User;
     const subject = () => connector.query(Klass);

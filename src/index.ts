@@ -16,7 +16,7 @@ import {
   OrderDirection,
 } from '@next-model/core';
 
-export class NextModelKnexConnector<S extends Identifiable> implements ConnectorConstructor<S> {
+export class KnexConnector<S extends Identifiable> implements ConnectorConstructor<S> {
   knex: Knex;
 
   constructor(options: Knex.Config) {
@@ -275,4 +275,4 @@ export class NextModelKnexConnector<S extends Identifiable> implements Connector
   }
 };
 
-export default NextModelKnexConnector;
+export default KnexConnector;
