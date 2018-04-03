@@ -606,11 +606,11 @@ describe('NextModelKnexConnector', () => {
           tests() {
             it('promises instance', async () => {
               expect(await Klass.count).toEqual(3);
-              expect(validUser().id).toBeGreaterThan(0);
+              const id = validId();
+              expect(id).toBeGreaterThan(0);
               let instance: User = <User>(await subject());
               expect(instance.id).toBeUndefined();
-              instance = <User>(await instance.reload());
-              expect(instance).toBeUndefined();
+              expect(await User.findBy.id(id)).toBeUndefined();
               expect(await Klass.count).toEqual(2);
             });
           }
