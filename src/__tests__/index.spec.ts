@@ -116,7 +116,7 @@ async function seedData() {
 async function seedDb(): Promise<Knex.SchemaBuilder> {
   await seedTable();
   await seedData();
-}
+};
 
 beforeEach(cleanDb);
 
