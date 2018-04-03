@@ -453,9 +453,6 @@ describe('NextModelKnexConnector', () => {
 
   describe('#deleteAll(Klass)', () => {
     let Klass: typeof User = User;
-    let attrs: Partial<UserSchema> = {
-      name: 'updated',
-    };
     const subject = () => connector.deleteAll(Klass);
 
     it('rejects with error', async () => {
