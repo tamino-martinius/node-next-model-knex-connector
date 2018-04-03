@@ -521,4 +521,39 @@ describe('NextModelKnexConnector', () => {
       }
     });
   });
+
+  describe('#create(instance)', () => {
+    let Klass: typeof User = User;
+    let attrs: Partial<UserSchema> = {
+      name: 'created',
+      age: 4711,
+    };
+    let klass = new Klass(attrs);
+    const subject = () => connector.create(klass);
+
+    it('rejects with error', async () => {
+      try {
+        const data = await subject();
+        expect(true).toBeFalsy(); // Should not reach
+      } catch (error) {
+        expect(error.message).toContain('SQLITE_ERROR: no such table: users');
+      }
+    });
+    context('with seeded table', {
+      definitions: seedTable,
+      tests() {
+        it('creates instance and sets id', async () => {
+          expect(await Klass.count).toEqual(0);
+          const instance = await subject();
+          expect(instance.id).toBeGreaterThan(0);
+          expect(instance.attributes).toEqual({
+            id: instance.id,
+            name: attrs.name,
+            age: attrs.age,
+          });
+          expect(await Klass.count).toEqual(1);
+        });
+      }
+    });
+  });
 });
