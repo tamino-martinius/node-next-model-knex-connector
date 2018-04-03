@@ -556,4 +556,37 @@ describe('NextModelKnexConnector', () => {
       }
     });
   });
+
+  describe('#update(instance)', () => {
+    let Klass: typeof User = User;
+    let klass: User;
+    let attrs: Partial<UserSchema> = {
+      name: 'updated',
+    };
+    const subject = () => {
+      klass = validUser();
+      for (const key in attrs) {
+        klass[key] = attrs[key];
+      }
+      return connector.update(klass)
+    };
+
+    context('with seeded table', {
+      definitions: seedTable,
+      tests() {
+        context('with seeded data', {
+          definitions: seedData,
+          tests() {
+            it('promises instance', async () => {
+              expect(validUser().name).not.toEqual('updated');
+              let instance: User = <User>(await subject());
+              expect(instance).toEqual(klass);
+              instance = <User>(await instance.reload());
+              expect(instance.name).toEqual('updated');
+            });
+          }
+        });
+      }
+    });
+  });
 });
