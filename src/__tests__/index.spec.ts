@@ -92,14 +92,17 @@ let user3: Partial<UserSchema>;
 
 async function cleanDb(): Promise<Knex.SchemaBuilder> {
   user1 = user2 = user3 = undefined;
+
   return connector.knex.schema.dropTableIfExists('users');
 };
 
-async function seedTable(): Promise<Knex.SchemaBuilder> {
-  return connector.knex.schema.createTable('users', (table) => {
-    table.increments('id');
-    table.string('name');
-    table.integer('age');
+function seedTable(): Promise<Knex.SchemaBuilder> {
+  return Promise.resolve().then(() => {
+    return connector.knex.schema.createTable('users', (table) => {
+      table.increments('id');
+      table.string('name');
+      table.integer('age');
+    });
   });
 };
 
