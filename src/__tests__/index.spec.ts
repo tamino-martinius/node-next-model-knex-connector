@@ -120,6 +120,9 @@ async function seedDb(): Promise<Knex.SchemaBuilder> {
 
 afterEach(cleanDb);
 
+const randomIndex = faker.random.number(2);
+const validId = () => [user1, user2, user3][randomIndex].id;
+
 
 describe('NextModelKnexConnector', () => {
   describe('#query', () => {
