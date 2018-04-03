@@ -264,7 +264,7 @@ export class NextModelKnexConnector<S extends Identifiable> implements Connector
     const model = instance.model;
     const identifier = model.identifier;
     const table = this.table(model);
-    await table.where({ [identifier]: instance.id }).delete();
+    await table.where(identifier, instance.id).del();
     instance.id = undefined;
     return instance;
   }
