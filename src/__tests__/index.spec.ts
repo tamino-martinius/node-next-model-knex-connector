@@ -69,6 +69,10 @@ interface UserSchema {
 const connector = new NextModelKnexConnector<UserSchema>(config);
 
 class User extends NextModel<UserSchema>() {
+  id: number;
+  name: string;
+  age: number;
+
   static get modelName() {
     return 'User';
   }
