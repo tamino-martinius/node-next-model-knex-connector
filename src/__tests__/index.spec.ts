@@ -107,10 +107,10 @@ function seedTable(): Promise<Knex.SchemaBuilder> {
 };
 
 async function seedData() {
-  user1 = await new User({ name: 'foo', age: 18 }).save();
-  user2 = await new User({ name: 'foo', age: 21 }).save();
-  user3 = await new User({ name: 'bar', age: 21 }).save();
-  return
+  user1 = (await new User({ name: 'foo', age: 18 }).save()).attributes;
+  user2 = (await new User({ name: null, age: 21 }).save()).attributes;
+  user3 = (await new User({ name: 'bar', age: 21 }).save()).attributes;
+  return [user1, user2, user3];
 };
 
 async function seedDb(): Promise<Knex.SchemaBuilder> {
