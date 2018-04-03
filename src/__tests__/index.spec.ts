@@ -250,11 +250,53 @@ describe('NextModelKnexConnector', () => {
     });
 
     context('with seeded data', {
-      definitions() {
-        seedDb();
-      },
+      definitions: seedDb,
       tests() {
-        expect(subject()).toEqual([user1, user2, user3]);
+        for (const groupName in filterSpecGroups) {
+          describe(groupName + ' filter', () => {
+            filterSpecGroups[groupName].forEach((filterSpec, index) => {
+              context('with filter #' + (index + 1), {
+                definitions() {
+                  const filter: Filter<UserSchema> = <any>filterSpec.filter();
+                  class NewKlass extends User {
+                    static get filter(): Filter<UserSchema> {
+                      return filter;
+                    }
+                  };
+                  Klass = NewKlass;
+                },
+                tests() {
+                  const results = filterSpec.results;
+                  if (typeof results === 'function') {
+                    it('promises all matching items as model instances', async () => {
+                      const ids = (<any>filterSpec.results)();
+                      const instances = await subject();
+                      expect(instances.length).toEqual(ids.length);
+                      if (ids.length > 0) {
+                        expect(instances[0] instanceof Klass).toBeTruthy();
+                      }
+                      expect(instances.map(instance => instance.id))
+                        .toEqual(ids);
+                    });
+                  } else {
+                    it('rejects filter and returns error', async () => {
+                      try {
+                        await subject();
+                        expect(true).toBeFalsy(); // Should not reach
+                      } catch (error) {
+                        if (error.message !== undefined) {
+                          expect(error.message).toEqual(results);
+                        } else {
+                          expect(error).toEqual(results);
+                        }
+                      }
+                    });
+                  }
+                },
+              });
+            });
+          });
+        }
       }
     });
   });
