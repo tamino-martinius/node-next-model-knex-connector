@@ -359,6 +359,82 @@ describe('NextModelKnexConnector', () => {
       }
     });
   });
+
+  describe('#updateAll(Klass, attrs)', () => {
+    let Klass: typeof User = User;
+    let attrs: Partial<UserSchema> = {
+      name: 'updated',
+    };
+    const subject = () => connector.updateAll(Klass, attrs);
+
+    it('rejects with error', async () => {
+      try {
+        const data = await subject();
+        expect(true).toBeFalsy(); // Should not reach
+      } catch (error) {
+        expect(error.message).toContain('SQLITE_ERROR: no such table: users');
+      }
+    });
+    context('with seeded table', {
+      definitions: seedTable,
+      tests() {
+        it('promises a count of 0', async () => {
+          const data = await subject();
+          return expect(data).toEqual(0);
+        });
+      }
+    });
+
+    context('with seeded data', {
+      definitions: seedDb,
+      tests() {
+        for (const groupName in filterSpecGroups) {
+          describe(groupName + ' filter', () => {
+            filterSpecGroups[groupName].forEach((filterSpec, index) => {
+              context('with filter #' + (index + 1), {
+                definitions() {
+                  const filter: Filter<UserSchema> = <any>filterSpec.filter();
+                  class NewKlass extends User {
+                    static get filter(): Filter<UserSchema> {
+                      return filter;
+                    }
+                  };
+                  Klass = NewKlass;
+                },
+                tests() {
+                  const results = filterSpec.results;
+                  if (typeof results === 'function') {
+                    it('returns count of matching records', async () => {
+                      const ids = (<any>filterSpec.results)();
+                      const count = await subject();
+                      expect(count).toEqual(ids.length);
+                      const instances = await connector.query(Klass);
+                      for (const instance of instances) {
+                        expect(instance.name).toEqual('updated');
+                      }
+                    });
+                  } else {
+                    it('rejects filter and returns error', async () => {
+                      try {
+                        await subject();
+                        expect(true).toBeFalsy(); // Should not reach
+                      } catch (error) {
+                        if (error.message !== undefined) {
+                          expect(error.message).toContain(results);
+                        } else {
+                          expect(error).toEqual(results);
+                        }
+                      }
+                    });
+                  }
+                },
+              });
+            });
+          });
+        }
+      }
+    });
+  });
                         } else {
                           expect(error).toEqual(results);
                         }
