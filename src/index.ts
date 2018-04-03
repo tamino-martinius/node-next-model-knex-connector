@@ -231,18 +231,14 @@ export class NextModelKnexConnector<S extends Identifiable> implements Connector
     throw '[TODO] Should not reach error';
   }
 
-  async updateAll(model: ModelStatic<S>, attrs: Partial<S>): Promise<ModelConstructor<S>[]> {
-    const rows: S[] = await this.collection(model).update(attrs, '*');
-    return rows.map(row => new model(row));
+  async updateAll(model: ModelStatic<S>, attrs: Partial<S>): Promise<number> {
+    const count: number = await this.collection(model).update(attrs, '*');
+    return count;
   }
 
-  async deleteAll(model: ModelStatic<S>): Promise<ModelConstructor<S>[]> {
-    const rows: S[] = await this.collection(model).delete('*');
-    return rows.map(row => {
-      const instance = new model(row);
-      instance.id = undefined;
-      return instance;
-    });
+  async deleteAll(model: ModelStatic<S>): Promise<number> {
+    const count: number = await this.collection(model).delete('*');
+    return count;
   }
 
   async create(instance: ModelConstructor<S>): Promise<ModelConstructor<S>> {
