@@ -231,16 +231,21 @@ describe('NextModelKnexConnector', () => {
     let Klass: typeof User = User;
     const subject = () => connector.query(Klass);
 
-    it('throws error', () => {
-      expect(subject).toThrow('test');
+    it('rejects with error', async () => {
+      try {
+        const data = await subject();
+        expect(true).toBeFalsy(); // Should not reach
+      } catch (error) {
+        expect(error.message).toEqual('select * from `users` - SQLITE_ERROR: no such table: users');
+      }
     });
-
     context('with seeded table', {
-      definitions() {
-        seedTable();
-      },
+      definitions: seedTable,
       tests() {
-        expect(subject()).toEqual([]);
+        it('promises empty array', async () => {
+          const data = await subject();
+          return expect(data).toEqual([]);
+        });
       }
     });
 
