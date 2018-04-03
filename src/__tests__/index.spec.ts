@@ -90,9 +90,9 @@ class User extends NextModel<UserSchema>() {
   }
 };
 
-let user1: Partial<UserSchema>;
-let user2: Partial<UserSchema>;
-let user3: Partial<UserSchema>;
+let user1: User;
+let user2: User;
+let user3: User;
 
 async function cleanDb(): Promise<Knex.SchemaBuilder> {
   user1 = user2 = user3 = undefined;
@@ -111,9 +111,9 @@ function seedTable(): Promise<Knex.SchemaBuilder> {
 };
 
 async function seedData() {
-  user1 = (await new User({ name: 'foo', age: 18 }).save()).attributes;
-  user2 = (await new User({ name: null, age: 21 }).save()).attributes;
-  user3 = (await new User({ name: 'bar', age: 21 }).save()).attributes;
+  user1 = <User>(await new User({ name: 'foo', age: 18 }).save());
+  user2 = <User>(await new User({ name: null, age: 21 }).save());
+  user3 = <User>(await new User({ name: 'bar', age: 21 }).save());
   return [user1, user2, user3];
 };
 
