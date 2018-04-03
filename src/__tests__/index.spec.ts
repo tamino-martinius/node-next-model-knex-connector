@@ -589,4 +589,33 @@ describe('NextModelKnexConnector', () => {
       }
     });
   });
+
+  describe('#delete(instance)', () => {
+    let Klass: typeof User = User;
+    let klass: User;
+    const subject = () => {
+      klass = validUser();
+      return connector.delete(klass)
+    };
+
+    context('with seeded table', {
+      definitions: seedTable,
+      tests() {
+        context('with seeded data', {
+          definitions: seedData,
+          tests() {
+            it('promises instance', async () => {
+              expect(await Klass.count).toEqual(3);
+              expect(validUser().id).toBeGreaterThan(0);
+              let instance: User = <User>(await subject());
+              expect(instance.id).toBeUndefined();
+              instance = <User>(await instance.reload());
+              expect(instance).toBeUndefined();
+              expect(await Klass.count).toEqual(2);
+            });
+          }
+        });
+      }
+    });
+  });
 });
