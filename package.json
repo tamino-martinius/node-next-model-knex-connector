@@ -1,6 +1,6 @@
 {
-  "name": "next-model-knex-connector",
-  "version": "0.3.3",
+  "name": "@next-model/knex-connector",
+  "version": "1.0.0-alpha.1",
   "description": "SQL connector for next-model package using Knex.",
   "author": "Tamino Martinius <dev@zaku.eu>",
   "license": "MIT",
@@ -9,7 +9,7 @@
     "url": "https://github.com/tamino-martinius/node-next-model-knex-connector.git"
   },
   "engines": {
-    "node": ">=4.3.2"
+    "node": ">=6.1.0"
   },
   "main": "index.js",
   "files": [
