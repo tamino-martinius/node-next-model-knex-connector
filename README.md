@@ -1,10 +1,11 @@
-# NextModelKnexConnector
+# KnexConnector
 
 SQL connector for [NextModel](https://github.com/tamino-martinius/node-next-model) package using [Knex](http://knexjs.org/). [![Build Status](https://travis-ci.org/tamino-martinius/node-next-model-knex-connector.svg?branch=master)](https://travis-ci.org/tamino-martinius/node-next-model-knex-connector)
 
 Allows you to use **Knex** as Database Connector for NextModel:
 
 Supports:
+
 * pg
 * sqlite3
 * mysql
@@ -14,7 +15,7 @@ Supports:
 * oracle
 * mssql (**not** tested)
 
-### Roadmap / Where can i contribute
+## Roadmap / Where can i contribute
 
 See [GitHub](https://github.com/tamino-martinius/node-next-model-knex-connector/projects/1) project for current progress/tasks
 
@@ -30,7 +31,8 @@ See [GitHub](https://github.com/tamino-martinius/node-next-model-knex-connector/
   * [Create Connector](#create-connector)
   * [Use Connector](#use-connector)
 * [Build Queries](#build-queries)
-  * [Where](#where)
+  * [query](#query)
+  * [find](#find)
   * [And](#and)
   * [Or](#or)
   * [Not](#not)
@@ -43,6 +45,7 @@ See [GitHub](https://github.com/tamino-martinius/node-next-model-knex-connector/
   * [Between](#between)
   * [NotBetween](#notbetween)
   * [Raw](#raw)
+  * [Execute](#execute)
 * [Changelog](#changelog)
 
 ## Example
@@ -57,9 +60,10 @@ The client parameter is required and determines which client adapter will be use
 
 The connection options are passed directly to the appropriate database client to create the connection, and may be either an object, or a connection string
 
-
 ~~~js
-const connector = new NextModelKnexConnector({
+import KnexConnector from '@next-model/knex-connector';
+
+const connector = new KnexConnector({
   client: 'mysql',
   connection: {
     host : '127.0.0.1',
@@ -71,7 +75,9 @@ const connector = new NextModelKnexConnector({
 ~~~
 
 ~~~js
-const connector = new NextModelKnexConnector({
+import KnexConnector from '@next-model/knex-connector';
+
+const connector = new KnexConnector({
   client: 'pg',
   connection: process.env.PG_CONNECTION_STRING,
   searchPath: 'knex,public'
@@ -81,7 +87,9 @@ const connector = new NextModelKnexConnector({
 _Note: When you use the SQLite3 adapter, there is a filename required, not a network connection. For example:_
 
 ~~~js
-const connector = new NextModelKnexConnector({
+import KnexConnector from '@next-model/knex-connector';
+
+const connector = new KnexConnector({
   client: 'sqlite3',
   connection: {
     filename: "./mydb.sqlite"
@@ -94,7 +102,7 @@ const connector = new NextModelKnexConnector({
 The connector is used to connect your models to a database.
 
 ~~~js
-const User = class User extends NextModel {
+const User = class User extends NextModel<UserSchema>() {
   static get connector() {
     return connector;
   }
@@ -115,13 +123,15 @@ const User = class User extends NextModel {
 Create an base model with the connector to use it with multiple models.
 
 ~~~js
-const BaseModel = class BaseModel extends NextModel {
-  static get connector() {
-    return connector;
+function BaseModel<T extends Identifiable>() {
+  return class extends NextModel<T>() {
+    static get connector() {
+      return new Connector<T>();
+    }
   }
-});
+};
 
-const User = class User extends BaseModel {
+const User = class User extends BaseModel<UserSchema>() {
   static get modelName() {
     return 'User';
   }
@@ -134,7 +144,7 @@ const User = class User extends BaseModel {
   }
 }
 
-const Address = class Address extends BaseModel {
+const Address = class Address extends BaseModel<AddressSchema>() {
   static get modelName() {
     return 'Address';
   }
@@ -152,13 +162,14 @@ const Address = class Address extends BaseModel {
 
 This connector uses Knex to query SQL databases, but the query syntax is different from the Knex documentation. Samples of possible queries are listed below.
 
-### Where
+### Query
 
-An object passed as `where` clause will query for object property and value.
+An object passed to `query` will filter for object property and value.
 
 ~~~js
-User.where({ name: 'foo' });
+User.query({ name: 'foo' });
 ~~~
+
 ~~~sql
 select "users".* from "users" where ("name" = 'foo')
 ~~~
@@ -166,19 +177,21 @@ select "users".* from "users" where ("name" = 'foo')
 If the Object has multiple properties the properties are connected with `and`.
 
 ~~~js
-User.where({ name: 'foo', age: 18 });
+User.query({ name: 'foo', age: 18 });
 ~~~
+
 ~~~sql
 select "users".* from "users" where ("name" = 'foo' and "age" = 18)
 ~~~
 
-An `where` query can be connected with another `where` or an `orWhere`. A second query will encapsulate the query on the topmost layer.
+An `query` connected with another `query`. A second query will encapsulate the query on the topmost layer.
 
 ~~~js
-User.where({ name: 'foo', age: 18 }).orWhere({ name: 'bar' });
+User.query({ name: 'foo', age: 18 }).query({ name: 'bar' });
 ~~~
+
 ~~~sql
-select "users".* from "users" where (("name" = 'foo' and "age" = 18) or ("name" = 'bar'))
+select "users".* from "users" where (("name" = 'foo' and "age" = 18) and ("name" = 'bar'))
 ~~~
 
 ### And
@@ -186,20 +199,22 @@ select "users".* from "users" where (("name" = 'foo' and "age" = 18) or ("name" 
 Special properties are starting with an `$` sign. The `$and` property connects all values which are passed as `Array` with an SQL `and` operator.
 
 ~~~js
-User.where({ $and: [
+User.query({ $and: [
   { name: 'foo' },
 ]});
 ~~~
+
 ~~~sql
 select "users".* from "users" where (("name" = 'foo'))
 ~~~
 
 ~~~js
-User.where({ $and: [
+User.query({ $and: [
   { name: 'foo' },
   { age: 18 },
 ]});
 ~~~
+
 ~~~sql
 select "users".* from "users" where (("name" = 'foo') and ("age" = 18))
 ~~~
@@ -207,16 +222,17 @@ select "users".* from "users" where (("name" = 'foo') and ("age" = 18))
 The special properties can also chained with other `where` queries.
 
 ~~~js
-User.where({ $and: [
+User.query({ $and: [
   { name: 'foo' },
   { age: 18 },
-]}).orWhere({ $and: [
+]}).query({ $and: [
   { name: 'bar' },
   { age: 21 },
 ]});
 ~~~
+
 ~~~sql
-select "users".* from "users" where ((("name" = 'foo') and ("age" = 18)) or (("name" = 'bar') and ("age" = 21)))
+select "users".* from "users" where ((("name" = 'foo') and ("age" = 18)) and (("name" = 'bar') and ("age" = 21)))
 ~~~
 
 ### Or
@@ -224,33 +240,36 @@ select "users".* from "users" where ((("name" = 'foo') and ("age" = 18)) or (("n
 The `$or` property works similar to the `$and` property and connects all values with `or`.
 
 ~~~js
-User.where({ $or: [
+User.query({ $or: [
   { name: 'foo' },
 ]});
 ~~~
+
 ~~~sql
 select "users".* from "users" where (("name" = 'foo'))
 ~~~
 
 ~~~js
-User.where({ $or: [
+User.query({ $or: [
   { name: 'foo' },
   { name: 'bar' },
 ]});
 ~~~
+
 ~~~sql
 select "users".* from "users" where (("name" = 'foo') or ("name" = 'bar'))
 ~~~
 
 ~~~js
-User.where({ $or: [
+User.query({ $or: [
   { name: 'foo' },
   { age: 18 },
-]}).where({ $or: [
+]}).query({ $or: [
   { name: 'bar' },
   { age: 21 },
 ]});
 ~~~
+
 ~~~sql
 select "users".* from "users" where ((("name" = 'foo') or ("age" = 18)) and (("name" = 'bar') or ("age" = 21)))
 ~~~
@@ -260,33 +279,36 @@ select "users".* from "users" where ((("name" = 'foo') or ("age" = 18)) and (("n
 The child object of an `$not` property will be inverted.
 
 ~~~js
-User.where({ $not: {
+User.query({ $not: {
   name: 'foo'
 }});
 ~~~
+
 ~~~sql
 select "users".* from "users" where (not ("name" = 'foo'))
 ~~~
 
 ~~~js
-User.where({ $not: {
+User.query({ $not: {
   name: 'foo',
   age: 18,
 }});
 ~~~
+
 ~~~sql
 select "users".* from "users" where (not ("name" = 'foo' and "age" = 18))
 ~~~
 
 ~~~js
-User.where({ $not: {
+User.query({ $not: {
   name: 'foo',
   age: 18,
-}}).where({ $not: {
+}}).query({ $not: {
   name: 'bar',
   age: 21,
 }});
 ~~~
+
 ~~~sql
 select "users".* from "users" where ((not ("name" = 'foo' and "age" = 18)) and (not ("name" = 'bar' and "age" = 21)))
 ~~~
@@ -296,19 +318,20 @@ select "users".* from "users" where ((not ("name" = 'foo' and "age" = 18)) and (
 The `$and`, `$or` and `$not` properties can be nested as deeply as needed.
 
 ~~~js
-User.where({ $not: {
+User.query({ $not: {
   $or: [
     { name: 'foo' },
     { age: 21 },
   ],
 }});
 ~~~
+
 ~~~sql
 select "users".* from "users" where (not (("name" = 'foo') or ("age" = 21)))
 ~~~
 
 ~~~js
-User.where({ $not: {
+User.query({ $not: {
   $and: [
     { name: 'foo' },
     { $or: [
@@ -318,6 +341,7 @@ User.where({ $not: {
   ],
 }});
 ~~~
+
 ~~~sql
 select "users".* from "users" where (not (("name" = 'foo') and (("age" = 18) or ("age" = 21))))
 ~~~
@@ -327,8 +351,9 @@ select "users".* from "users" where (not (("name" = 'foo') and (("age" = 18) or 
 The `$null` property checks for unset columns and takes the column name as value.
 
 ~~~js
-User.where({ $null: 'name' });
+User.query({ $null: 'name' });
 ~~~
+
 ~~~sql
 select "users".* from "users" where ("name" is null)
 ~~~
@@ -338,8 +363,9 @@ select "users".* from "users" where ("name" is null)
 The `$notNull` property checks if an column is set and takes the column name as value.
 
 ~~~js
-User.where({ $notNull: 'name' });
+User.query({ $notNull: 'name' });
 ~~~
+
 ~~~sql
 select "users".* from "users" where ("name" is not null)
 ~~~
@@ -347,40 +373,53 @@ select "users".* from "users" where ("name" is not null)
 ### Equation
 
 There are five different equation properties available.
+
 * `$eq` checks for equal
 * `$lt` checks for lower
 * `$gt` checks for greater
-
-`$lt`, `$gt` also allows equal values.
+* `$lte` checks for lower or equal
+* `$gte` checks for greater or equal
 
 The property needs to be an object as value with the column name as key and the equation as value.
 
 ~~~js
-User.where({ $lt: { age: 18 } });
+User.query({ $lt: { age: 18 } });
 ~~~
+
 ~~~sql
 select "users".* from "users" where ("age" < 18)
 ~~~
 
 ~~~js
-User.where({ $lt: { age: 18, size: 180 } });
-~~~
-~~~sql
-select "users".* from "users" where ("age" < 18 and "size" < 180)
+User.query({ $lte: { age: 18 } });
 ~~~
 
-~~~js
-User.where({ $lte: { age: 18 } });
-~~~
 ~~~sql
 select "users".* from "users" where ("age" <= 18)
 ~~~
 
+*Please note:* Just one propery is allowed!
+
+This is invalid:
+
 ~~~js
-User.where({ $lte: { age: 18, size: 180 } });
+User.query({ $lt: {
+  age: 18,
+  size: 180,
+}});
 ~~~
+
+This is valid:
+
+~~~js
+User.query({ $and: [
+  { $lt: { age: 18 } },
+  { $lt: { size: 180 } },
+]});
+~~~
+
 ~~~sql
-select "users".* from "users" where ("age" <= 18 and "size" <= 180)
+select "users".* from "users" where ("age" < 18 and "size" < 180)
 ~~~
 
 ### In
@@ -388,22 +427,35 @@ select "users".* from "users" where ("age" <= 18 and "size" <= 180)
 The `$in` property needs an object as value with the column name as key and the `Array` of values as value.
 
 ~~~js
-User.where({ $in: {
+User.query({ $in: {
   name: ['foo', 'bar'],
 }});
 ~~~
+
 ~~~sql
 select "users".* from "users" where ("name" in ('foo', 'bar'))
 ~~~
 
-If multiple properties are present they get connected by an `and` operator.
+*Please note:* Just one propery is allowed!
+
+This is invalid:
 
 ~~~js
-User.where({ $in: {
+User.query({ $in: {
   name: ['foo', 'bar'],
   age: [18, 19, 20, 21],
 }});
 ~~~
+
+This is valid:
+
+~~~js
+User.query({ $and: [
+  { $in: { name: ['foo', 'bar'] } },
+  { $in: { age: [18, 19, 20, 21] } },
+]});
+~~~
+
 ~~~sql
 select "users".* from "users" where ("name" in ('foo', 'bar') and "age" in (18, 19, 20, 21))
 ~~~
@@ -413,20 +465,35 @@ select "users".* from "users" where ("name" in ('foo', 'bar') and "age" in (18, 
 `$notIn` works same as `$in` but inverts the result.
 
 ~~~js
-User.where({ $notIn: {
+User.query({ $notIn: {
   name: ['foo', 'bar'],
 }});
 ~~~
+
 ~~~sql
 select "users".* from "users" where ("name" not in ('foo', 'bar'))
 ~~~
 
+*Please note:* Just one propery is allowed!
+
+This is invalid:
+
 ~~~js
-User.where({ $notIn: {
+User.query({ $notIn: {
   name: ['foo', 'bar'],
   age: [18, 19, 20, 21],
 }});
 ~~~
+
+This is valid:
+
+~~~js
+User.query({ $and: [
+  { $notIn: { name: ['foo', 'bar'] } },
+  { $notIn: { age: [18, 19, 20, 21] } },
+]});
+~~~
+
 ~~~sql
 select "users".* from "users" where ("name" not in ('foo', 'bar') and "age" not in (18, 19, 20, 21))
 ~~~
@@ -436,22 +503,35 @@ select "users".* from "users" where ("name" not in ('foo', 'bar') and "age" not 
 The `$between` property needs an object as value with the column name as key and an  `Array` with the min and max values as value.
 
 ~~~js
-User.where({ $between: {
+User.query({ $between: {
   age: [18, 21],
 }});
 ~~~
+
 ~~~sql
 select "users".* from "users" where ("age" between 18 and 21)
 ~~~
 
-If multiple properties are present they get connected by an `and` operator.
+*Please note:* Just one propery is allowed!
+
+This is invalid:
 
 ~~~js
-User.where({ $between: {
+User.query({ $between: {
   age: [18, 21],
   size: [160, 185],
 }});
 ~~~
+
+This is valid:
+
+~~~js
+User.query({ $and: [
+  { $between: { age: [18, 21] } },
+  { $between: { size: [160, 185] } },
+]});
+~~~
+
 ~~~sql
 select "users".* from "users" where ("age" between 18 and 21 and "size" between 160 and 165)
 ~~~
@@ -461,20 +541,35 @@ select "users".* from "users" where ("age" between 18 and 21 and "size" between 
 `$notBetween` works same as `$between` but inverts the result.
 
 ~~~js
-User.where({ $notBetween: {
+User.query({ $notBetween: {
   age: [18, 21],
 }});
 ~~~
+
 ~~~sql
 select "users".* from "users" where ("age" not between 18 and 21)
 ~~~
 
+*Please note:* Just one propery is allowed!
+
+This is invalid:
+
 ~~~js
-User.where({ $notBetween: {
+User.query({ $notBetween: {
   age: [18, 21],
   size: [160, 185],
 }});
 ~~~
+
+This is valid:
+
+~~~js
+User.query({ $and: [
+  { $notBetween: { age: [18, 21] } },
+  { $notBetween: { size: [160, 185] } },
+]});
+~~~
+
 ~~~sql
 select "users".* from "users" where ("age" not between 18 and 21 and "size" not between 160 and 165)
 ~~~
@@ -486,35 +581,35 @@ The `$raw` property allows to write custom and database specific queries. Pass q
 _Note: See [Knex documentation](http://knexjs.org/#Raw-Bindings) for more details about bindings._
 
 ~~~js
-User.where({ $raw: {
-  ['age = ?']: [18],
+User.query({ $raw: {
+  $query: 'age = ?',
+  $bindings: 18,
 }});
-~~~
-~~~sql
-select "users".* from "users" where ("age" = 18)
 ~~~
 
 ~~~js
-User.where({ $raw: {
-  ['age = ?']: [18],
-  ['name = ?']: ['foo'],
+User.query({ $raw: {
+  $query: 'age = :age',
+  $bindings: { age: 18 },
 }});
 ~~~
+
 ~~~sql
-select "users".* from "users" where ("age" = 18 and "name" = 'foo')
+select "users".* from "users" where ("age" = 18)
 ~~~
 
 ## Changelog
 
 See [history](HISTORY.md) for more details.
 
-* `0.0.1` **2017-02-05** First release compatible with NextModel 0.0.1
-* `0.0.2` **2017-02-12** Added more complex query types
-* `0.0.3` **2017-02-12** Added CI
-* `0.0.4` **2017-02-16** Updated to NextModel v0.0.4
-* `0.1.0` **2017-02-18** Used next-model from npm instead of Github repo
-* `0.2.0` **2017-02-21** Added new query types
-* `0.3.0` **2017-02-22** Added Node 4 Support
-* `0.3.1` **2017-02-27** Updated next-model dependency
-* `0.3.2` **2017-02-28** Updated next-model dependency
+* `1.0.0` **2018-xx-xx** Complete rewrite based on TypeScript
 * `0.3.3` **2017-04-05** Updated next-model dependency
+* `0.3.2` **2017-02-28** Updated next-model dependency
+* `0.3.1` **2017-02-27** Updated next-model dependency
+* `0.3.0` **2017-02-22** Added Node 4 Support
+* `0.2.0` **2017-02-21** Added new query types
+* `0.1.0` **2017-02-18** Used next-model from npm instead of Github repo
+* `0.0.4` **2017-02-16** Updated to NextModel v0.0.4
+* `0.0.3` **2017-02-12** Added CI
+* `0.0.2` **2017-02-12** Added more complex query types
+* `0.0.1` **2017-02-05** First release compatible with NextModel 0.0.1
