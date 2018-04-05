@@ -173,12 +173,12 @@ const filterSpecGroups: FilterSpecGroup = {
   '$null': [
     { filter: () => ({ $null: 'name' }), results: () => ([user2.id]) },
     { filter: () => ({ $null: 'id' }), results: () => ([]) },
-    { filter: () => ({ $null: 'bar' }), results: 'SQLITE_ERROR: no such column: bar' },
+    { filter: () => ({ $null: 'bar' }), results: 'bar' },
   ],
   '$notNull': [
     { filter: () => ({ $notNull: 'name' }), results: () => ([user1.id, user3.id]) },
     { filter: () => ({ $notNull: 'id' }), results: () => ([user1.id, user2.id, user3.id]) },
-    { filter: () => ({ $notNull: 'bar' }), results: 'SQLITE_ERROR: no such column: bar' },
+    { filter: () => ({ $notNull: 'bar' }), results: 'bar' },
   ],
   '$between': [
     { filter: () => ({ $between: {} }), results: '[TODO] Return proper error' },
@@ -241,7 +241,7 @@ describe('KnexConnector', () => {
         const data = await subject();
         expect(true).toBeFalsy(); // Should not reach
       } catch (error) {
-        expect(error.message).toContain('SQLITE_ERROR: no such table: users');
+        expect(error.message).toContain('users');
       }
     });
     context('with seeded table', {
@@ -315,7 +315,7 @@ describe('KnexConnector', () => {
         const data = await subject();
         expect(true).toBeFalsy(); // Should not reach
       } catch (error) {
-        expect(error.message).toContain('SQLITE_ERROR: no such table: users');
+        expect(error.message).toContain('users');
       }
     });
     context('with seeded table', {
@@ -387,7 +387,7 @@ describe('KnexConnector', () => {
         const data = await subject();
         expect(true).toBeFalsy(); // Should not reach
       } catch (error) {
-        expect(error.message).toContain('SQLITE_ERROR: no such table: users');
+        expect(error.message).toContain('users');
       }
     });
     context('with seeded table', {
@@ -460,7 +460,7 @@ describe('KnexConnector', () => {
         const data = await subject();
         expect(true).toBeFalsy(); // Should not reach
       } catch (error) {
-        expect(error.message).toContain('SQLITE_ERROR: no such table: users');
+        expect(error.message).toContain('users');
       }
     });
     context('with seeded table', {
@@ -536,7 +536,7 @@ describe('KnexConnector', () => {
         const data = await subject();
         expect(true).toBeFalsy(); // Should not reach
       } catch (error) {
-        expect(error.message).toContain('SQLITE_ERROR: no such table: users');
+        expect(error.message).toContain('users');
       }
     });
     context('with seeded table', {
@@ -629,7 +629,7 @@ describe('KnexConnector', () => {
         const data = await subject();
         expect(true).toBeFalsy(); // Should not reach
       } catch (error) {
-        expect(error.message).toContain('SQLITE_ERROR: no such table: users');
+        expect(error.message).toContain('users');
       }
     });
 
