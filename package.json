@@ -4,6 +4,13 @@
   "description": "SQL connector for next-model package using Knex.",
   "author": "Tamino Martinius <dev@zaku.eu>",
   "license": "MIT",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "jsnext:main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "files": [
+    "dist/*"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/tamino-martinius/node-next-model-knex-connector.git"
@@ -11,52 +18,27 @@
   "engines": {
     "node": ">=6.1.0"
   },
-  "main": "index.js",
-  "files": [
-    "index.js"
-  ],
-  "watch": {
-    "lint": {
-      "patterns": [
-        "."
-      ],
-      "extensions": [
-        "js"
-      ],
-      "inherit": true
-    },
-    "test": {
-      "patterns": [
-        "."
-      ],
-      "extensions": [
-        "js"
-      ],
-      "inherit": true
-    }
-  },
   "scripts": {
     "coverage": "rm -rf coverage* && jest --coverage && node remap_coverage.js && rm -rf coverage_jest_raw*",
     "test": "jest",
     "watch": "tsc -w",
     "ci": "npm run coverage && codecov",
-    "prepublishxx": "rm -rf dist/* && tsc"
+    "prepublish": "rm -rf dist/* && tsc"
   },
   "devDependencies": {
     "@types/knex": "^0.14.9",
     "@types/faker": "^4.1.2",
     "@types/jest": "^22.2.0",
     "@types/node": "^9.4.7",
+    "@next-model/core": "^1.0.0-alpha.11",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
     "codecov": "^3.0.0",
     "faker": "^4.1.0",
     "jest": "^22.4.2",
     "jest-set": "^2.0.0",
-    "npm-watch": "^0.3.0",
     "remap-istanbul": "^0.11.0",
     "ts-jest": "^22.4.1",
     "typescript": "^2.7.2",
-    "@next-model/core": "^1.0.0-alpha.11",
     "sqlite3": "^4.0.0"
   },
   "dependencies": {
