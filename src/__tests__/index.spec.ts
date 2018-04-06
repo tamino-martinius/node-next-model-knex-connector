@@ -670,3 +670,7 @@ describe('KnexConnector', () => {
     });
   });
 });
+
+afterAll(() => {
+  connector.knex.destroy();
+});
