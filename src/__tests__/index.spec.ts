@@ -229,6 +229,10 @@ const filterSpecGroups: FilterSpecGroup = {
     { filter: () => ({ $lte: { id: 0 } }), results: () => ([]) },
     { filter: () => ({ $lte: { id: user1.id, name: 'z' } }), results: '[TODO] Return proper error' },
   ],
+  '$raw': [
+    { filter: () => ({ $raw: { $query: 'id = ?', $bindings: validId() } }), results: () => [validId()] },
+    { filter: () => ({ $raw: { $query: 'id = :id', $bindings: { id: validId() } } }), results: () => [validId()] },
+  ],
 };
 
 describe('KnexConnector', () => {
