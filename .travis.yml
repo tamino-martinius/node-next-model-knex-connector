@@ -28,7 +28,6 @@ env:
   - DB=mysql
   - DB=mysql2
   - DB=postgres
-  - DB=oracledb ORACLE_HOME=/u01/app/oracle/product/11.2.0/xe ORACLE_SID=XE OCI_LIB_DIR=/u01/app/oracle/product/11.2.0/xe/lib LD_LIBRARY_PATH=/u01/app/oracle/product/11.2.0/xe/lib
 
 before_install:
   - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'CREATE DATABASE IF NOT EXISTS test_mysql;'; fi"
