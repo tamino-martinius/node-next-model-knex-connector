@@ -246,6 +246,7 @@ export class KnexConnector<S extends Identifiable> implements ConnectorConstruct
     // const identifier = model.identifier;
     const table = this.table(model);
     const data = instance.attributes;
+    delete (<any>data)[model.identifier];
     const ids = await table.insert(data);
     instance.id = ids[0];
     return instance;
