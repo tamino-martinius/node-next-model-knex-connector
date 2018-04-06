@@ -271,7 +271,11 @@ export class KnexConnector<S extends Identifiable> implements ConnectorConstruct
 
   async execute(query: string, bindings: Bindings): Promise<any[]> {
     const rows: any[] = await this.knex.raw(query, bindings);
-    return rows;
+    if (this.knex.client.config.client === 'sqlite3') {
+      return rows;
+    } else {
+      return rows[0];
+    }
   }
 };
 
