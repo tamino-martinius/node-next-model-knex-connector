@@ -42,7 +42,7 @@
     "sqlite3": "^4.0.0"
   },
   "dependencies": {
-    "knex": "^0.14.4"
+    "knex": "=0.14.4"
   },
   "jest": {
     "transform": {
