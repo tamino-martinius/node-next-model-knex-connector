@@ -31,6 +31,7 @@ export declare class KnexConnector<S extends Identifiable> implements ConnectorC
     create(instance: ModelConstructor<S>): Promise<ModelConstructor<S>>;
     update(instance: ModelConstructor<S>): Promise<ModelConstructor<S>>;
     delete(instance: ModelConstructor<S>): Promise<ModelConstructor<S>>;
+    private identifier(model);
     execute(query: string, bindings: Bindings): Promise<any[]>;
 }
 export default KnexConnector;
