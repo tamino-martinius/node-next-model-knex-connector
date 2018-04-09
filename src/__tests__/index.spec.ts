@@ -97,16 +97,15 @@ let user3: User;
 async function cleanDb(): Promise<Knex.SchemaBuilder> {
   user1 = user2 = user3 = undefined;
 
-  return connector.knex.schema.dropTableIfExists('users');
+  return await connector.knex.schema.dropTableIfExists('users');
 };
 
-function seedTable(): Promise<Knex.SchemaBuilder> {
-  return Promise.resolve().then(() => {
-    return connector.knex.schema.createTable('users', (table) => {
-      table.increments('id');
-      table.string('name');
-      table.integer('age');
-    });
+async function seedTable(): Promise<Knex.SchemaBuilder> {
+  await connector.knex.schema.dropTableIfExists('users');
+  return await connector.knex.schema.createTable('users', (table) => {
+    table.increments('id').primary().unsigned();
+    table.string('name');
+    table.integer('age');
   });
 };
 
