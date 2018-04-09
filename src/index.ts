@@ -275,6 +275,14 @@ export class KnexConnector<S extends Identifiable> implements ConnectorConstruct
     return instance;
   }
 
+  private identifier(model: ModelStatic<S>): string | undefined {
+    if (this.knex.client.config.client === 'sqlite3') {
+      return undefined;
+    } else {
+      return model.identifier;
+    }
+  }
+
   async execute(query: string, bindings: Bindings): Promise<any[]> {
     const rows: any[] = await this.knex.raw(query, bindings);
     if (this.knex.client.config.client === 'sqlite3') {
