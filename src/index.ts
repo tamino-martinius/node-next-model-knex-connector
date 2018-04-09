@@ -1,3 +1,8 @@
+try {
+  const pg = require('pg')
+  pg.types.setTypeParser(20, 'text', parseInt)
+} catch (e) { }
+
 import Knex from 'knex';
 import {
   Identifiable,
