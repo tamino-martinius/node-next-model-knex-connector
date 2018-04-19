@@ -55,7 +55,6 @@
       "tsx",
       "js",
       "json"
-    ],
-    "coverageDirectory": "coverage_jest_raw"
+    ]
   }
 }
