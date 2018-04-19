@@ -1,3 +1,8 @@
+try {
+  const pg = require('pg')
+  pg.types.setTypeParser(20, 'text', parseInt)
+} catch (e) { }
+
 import Knex from 'knex';
 import {
   Identifiable,
@@ -246,7 +251,8 @@ export class KnexConnector<S extends Identifiable> implements ConnectorConstruct
     // const identifier = model.identifier;
     const table = this.table(model);
     const data = instance.attributes;
-    const ids = await table.insert(data);
+    delete (<any>data)[model.identifier];
+    const ids = await table.insert(data, this.identifier(model));
     instance.id = ids[0];
     return instance;
   }
@@ -269,9 +275,23 @@ export class KnexConnector<S extends Identifiable> implements ConnectorConstruct
     return instance;
   }
 
+  private identifier(model: ModelStatic<S>): string | undefined {
+    if (this.knex.client.config.client === 'sqlite3') {
+      return undefined;
+    } else {
+      return model.identifier;
+    }
+  }
+
   async execute(query: string, bindings: Bindings): Promise<any[]> {
-    const rows: any[] = await this.knex.raw(query, bindings);
-    return rows;
+    const rows: any = await this.knex.raw(query, bindings);
+    if (this.knex.client.config.client === 'sqlite3') {
+      return rows;
+    } else if (this.knex.client.config.client === 'postgres') {
+      return rows.rows;
+    } else {
+      return rows[0];
+    }
   }
 };
 

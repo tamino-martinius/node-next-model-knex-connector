@@ -97,16 +97,15 @@ let user3: User;
 async function cleanDb(): Promise<Knex.SchemaBuilder> {
   user1 = user2 = user3 = undefined;
 
-  return connector.knex.schema.dropTableIfExists('users');
+  return await connector.knex.schema.dropTableIfExists('users');
 };
 
-function seedTable(): Promise<Knex.SchemaBuilder> {
-  return Promise.resolve().then(() => {
-    return connector.knex.schema.createTable('users', (table) => {
-      table.increments('id');
-      table.string('name');
-      table.integer('age');
-    });
+async function seedTable(): Promise<Knex.SchemaBuilder> {
+  await connector.knex.schema.dropTableIfExists('users');
+  return await connector.knex.schema.createTable('users', (table) => {
+    table.increments('id').primary().unsigned();
+    table.string('name');
+    table.integer('age');
   });
 };
 
@@ -229,12 +228,18 @@ const filterSpecGroups: FilterSpecGroup = {
     { filter: () => ({ $lte: { id: 0 } }), results: () => ([]) },
     { filter: () => ({ $lte: { id: user1.id, name: 'z' } }), results: '[TODO] Return proper error' },
   ],
+  '$raw': [
+    { filter: () => ({ $raw: { $query: 'id = ?', $bindings: validId() } }), results: () => [validId()] },
+    { filter: () => ({ $raw: { $query: 'id = :id', $bindings: { id: validId() } } }), results: () => [validId()] },
+  ],
 };
 
 describe('KnexConnector', () => {
   describe('#query(Klass)', () => {
+    let skip = 0;
+    let limit = Number.MAX_SAFE_INTEGER;
     let Klass: typeof User = User;
-    const subject = () => connector.query(Klass);
+    const subject = () => connector.query(Klass.skipBy(skip).limitBy(limit));
 
     it('rejects with error', async () => {
       try {
@@ -274,7 +279,7 @@ describe('KnexConnector', () => {
                   const results = filterSpec.results;
                   if (typeof results === 'function') {
                     it('promises all matching items as model instances', async () => {
-                      const ids = (<any>filterSpec.results)();
+                      const ids = results();
                       const instances = await subject();
                       expect(instances.length).toEqual(ids.length);
                       if (ids.length > 0) {
@@ -282,6 +287,74 @@ describe('KnexConnector', () => {
                       }
                       expect(instances.map(instance => instance.id))
                         .toEqual(ids);
+                    });
+
+                    context('when skip is present', {
+                      definitions() {
+                        skip = 1;
+                      },
+                      reset() {
+                        skip = 0;
+                      },
+                      tests() {
+                        it('promises all matching items as model instances', async () => {
+                          const instances = await subject();
+                          const ids = results();
+
+                          expect(instances.length).toEqual(Math.max(0, ids.length - 1));
+                          if (ids.length > 1) {
+                            expect(instances[0] instanceof Klass).toBeTruthy();
+                          }
+                          expect(instances.map(instance => instance.id))
+                            .toEqual(ids.slice(1));
+                        });
+                      },
+                    });
+
+                    context('when limit is present', {
+                      definitions() {
+                        limit = 1;
+                      },
+                      reset() {
+                        limit = Number.MAX_SAFE_INTEGER;
+                      },
+                      tests() {
+                        it('promises all matching items as model instances', async () => {
+                          const instances = await subject();
+                          const ids = results();
+
+                          expect(instances.length).toEqual(ids.length > 0 ? 1 : 0);
+                          if (ids.length > 0) {
+                            expect(instances[0] instanceof Klass).toBeTruthy();
+                          }
+                          expect(instances.map(instance => instance.id))
+                            .toEqual(ids.slice(0, 1));
+                        });
+                      },
+                    });
+
+                    context('when skip and limit is present', {
+                      definitions() {
+                        skip = 1;
+                        limit = 1;
+                      },
+                      reset() {
+                        skip = 0;
+                        limit = Number.MAX_SAFE_INTEGER;
+                      },
+                      tests() {
+                        it('promises all matching items as model instances', async () => {
+                          const instances = await subject();
+                          const ids = results();
+
+                          expect(instances.length).toEqual(ids.length - 1 > 0 ? 1 : 0);
+                          if (ids.length > 1) {
+                            expect(instances[0] instanceof Klass).toBeTruthy();
+                          }
+                          expect(instances.map(instance => instance.id))
+                            .toEqual(ids.slice(1, 2));
+                        });
+                      },
                     });
                   } else {
                     it('rejects filter and returns error', async () => {
@@ -665,4 +738,8 @@ describe('KnexConnector', () => {
       }
     });
   });
+});
+
+afterAll(() => {
+  connector.knex.destroy();
 });

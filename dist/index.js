@@ -35,6 +35,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+try {
+    var pg = require('pg');
+    pg.types.setTypeParser(20, 'text', parseInt);
+}
+catch (e) { }
 var knex_1 = require("knex");
 var core_1 = require("@next-model/core");
 var KnexConnector = (function () {
@@ -303,7 +308,8 @@ var KnexConnector = (function () {
                         model = instance.model;
                         table = this.table(model);
                         data = instance.attributes;
-                        return [4, table.insert(data)];
+                        delete data[model.identifier];
+                        return [4, table.insert(data, this.identifier(model))];
                     case 1:
                         ids = _a.sent();
                         instance.id = ids[0];
@@ -348,6 +354,14 @@ var KnexConnector = (function () {
             });
         });
     };
+    KnexConnector.prototype.identifier = function (model) {
+        if (this.knex.client.config.client === 'sqlite3') {
+            return undefined;
+        }
+        else {
+            return model.identifier;
+        }
+    };
     KnexConnector.prototype.execute = function (query, bindings) {
         return __awaiter(this, void 0, void 0, function () {
             var rows;
@@ -356,7 +370,16 @@ var KnexConnector = (function () {
                     case 0: return [4, this.knex.raw(query, bindings)];
                     case 1:
                         rows = _a.sent();
-                        return [2, rows];
+                        if (this.knex.client.config.client === 'sqlite3') {
+                            return [2, rows];
+                        }
+                        else if (this.knex.client.config.client === 'postgres') {
+                            return [2, rows.rows];
+                        }
+                        else {
+                            return [2, rows[0]];
+                        }
+                        return [2];
                 }
             });
         });
