@@ -23,7 +23,8 @@
     "test": "jest",
     "watch": "tsc -w",
     "ci": "npm run coverage && codecov",
-    "prepublish": "rm -rf dist/* && tsc"
+    "compile": "rm -rf dist/* && tsc",
+    "preversion": "npm run compile && git add ."
   },
   "devDependencies": {
     "@types/knex": "^0.14.9",
