@@ -11,11 +11,9 @@ import {
   ModelConstructor,
   Bindings,
   FilterSpecial,
-  FilterProperty,
   Filter,
   FilterIn,
   FilterBetween,
-  FilterCompare,
   FilterRaw,
   BaseType,
   OrderDirection,
@@ -40,11 +38,11 @@ export class KnexConnector<S extends Identifiable> implements ConnectorConstruct
     return this.knex(this.tableName(model));
   }
 
-  private propertyFilter(query: Knex.QueryBuilder, filter: FilterProperty<S>): Knex.QueryBuilder {
+  private async propertyFilter(query: Knex.QueryBuilder, filter: Partial<S>): Promise<Knex.QueryBuilder> {
     return query.where(filter);
   }
 
-  private andFilter(query: Knex.QueryBuilder, filters: Filter<S>[]): Knex.QueryBuilder {
+  private async andFilter(query: Knex.QueryBuilder, filters: Filter<S>[]): Promise<Knex.QueryBuilder> {
     const self = this;
     for (const filter of filters) {
       query = query.andWhere(function () {
@@ -54,14 +52,14 @@ export class KnexConnector<S extends Identifiable> implements ConnectorConstruct
     return query;
   }
 
-  private notFilter(query: Knex.QueryBuilder, filter: Filter<S>): Knex.QueryBuilder {
+  private async notFilter(query: Knex.QueryBuilder, filter: Filter<S>): Promise<Knex.QueryBuilder> {
     const self = this;
     return query.whereNot(function () {
       self.filter(this, filter);
     });
   }
 
-  private orFilter(query: Knex.QueryBuilder, filters: Filter<S>[]): Knex.QueryBuilder {
+  private async orFilter(query: Knex.QueryBuilder, filters: Filter<S>[]): Promise<Knex.QueryBuilder> {
     const self = this;
     for (const filter of filters) {
       query = query.orWhere(function () {
@@ -71,7 +69,7 @@ export class KnexConnector<S extends Identifiable> implements ConnectorConstruct
     return query;
   }
 
-  private inFilter(query: Knex.QueryBuilder, filter: FilterIn<S>): Knex.QueryBuilder {
+  private async inFilter(query: Knex.QueryBuilder, filter: Partial<FilterIn<S>>): Promise<Knex.QueryBuilder> {
     if (Object.keys(filter).length !== 1) throw '[TODO] Return proper error';
     for (const key in filter) {
       return query.whereIn(key, <any>filter[key]);
@@ -79,7 +77,7 @@ export class KnexConnector<S extends Identifiable> implements ConnectorConstruct
     throw '[TODO] Should not reach error';
   }
 
-  private notInFilter(query: Knex.QueryBuilder, filter: FilterIn<S>): Knex.QueryBuilder {
+  private async notInFilter(query: Knex.QueryBuilder, filter: Partial<FilterIn<S>>): Promise<Knex.QueryBuilder> {
     if (Object.keys(filter).length !== 1) throw '[TODO] Return proper error';
     for (const key in filter) {
       return query.whereNotIn(key, <any>filter[key]);
@@ -87,31 +85,37 @@ export class KnexConnector<S extends Identifiable> implements ConnectorConstruct
     throw '[TODO] Should not reach error';
   }
 
-  private nullFilter(query: Knex.QueryBuilder, key: keyof S): Knex.QueryBuilder {
+  private async nullFilter(query: Knex.QueryBuilder, key: keyof S): Promise<Knex.QueryBuilder> {
     return query.whereNull(key);
   }
 
-  private notNullFilter(query: Knex.QueryBuilder, key: keyof S): Knex.QueryBuilder {
+  private async notNullFilter(query: Knex.QueryBuilder, key: keyof S): Promise<Knex.QueryBuilder> {
     return query.whereNotNull(key);
   }
 
-  private betweenFilter(query: Knex.QueryBuilder, filter: FilterBetween<S>): Knex.QueryBuilder {
+  private async betweenFilter(query: Knex.QueryBuilder, filter: Partial<FilterBetween<S>>): Promise<Knex.QueryBuilder> {
     if (Object.keys(filter).length !== 1) throw '[TODO] Return proper error';
     for (const key in filter) {
-      return query.andWhereBetween(key, [<any>filter[key].from, <any>filter[key].to])
+      const filterBetween = filter[key];
+      if (filterBetween !== undefined) {
+        return query.andWhereBetween(key, [<any>filterBetween.from, <any>filterBetween.to])
+      }
     }
     throw '[TODO] Should not reach error';
   }
 
-  private notBetweenFilter(query: Knex.QueryBuilder, filter: FilterBetween<S>): Knex.QueryBuilder {
+  private async notBetweenFilter(query: Knex.QueryBuilder, filter: Partial<FilterBetween<S>>): Promise<Knex.QueryBuilder> {
     if (Object.keys(filter).length !== 1) throw '[TODO] Return proper error';
     for (const key in filter) {
-      return query.andWhereNotBetween(key, [<any>filter[key].from, <any>filter[key].to])
+      const filterBetween = filter[key];
+      if (filterBetween !== undefined) {
+        return query.andWhereNotBetween(key, [<any>filterBetween.from, <any>filterBetween.to])
+      }
     }
     throw '[TODO] Should not reach error';
   }
 
-  private gtFilter(query: Knex.QueryBuilder, filter: FilterCompare<S>): Knex.QueryBuilder {
+  private async gtFilter(query: Knex.QueryBuilder, filter: Partial<S>): Promise<Knex.QueryBuilder> {
     if (Object.keys(filter).length !== 1) throw '[TODO] Return proper error';
     for (const key in filter) {
       return query.where(key, '>', <any>filter[key]);
@@ -119,7 +123,7 @@ export class KnexConnector<S extends Identifiable> implements ConnectorConstruct
     throw '[TODO] Should not reach error';
   }
 
-  private gteFilter(query: Knex.QueryBuilder, filter: FilterCompare<S>): Knex.QueryBuilder {
+  private async gteFilter(query: Knex.QueryBuilder, filter: Partial<S>): Promise<Knex.QueryBuilder> {
     if (Object.keys(filter).length !== 1) throw '[TODO] Return proper error';
     for (const key in filter) {
       const value: BaseType = <any>filter[key];
@@ -130,7 +134,7 @@ export class KnexConnector<S extends Identifiable> implements ConnectorConstruct
     throw '[TODO] Should not reach error';
   }
 
-  private ltFilter(query: Knex.QueryBuilder, filter: FilterCompare<S>): Knex.QueryBuilder {
+  private async ltFilter(query: Knex.QueryBuilder, filter: Partial<S>): Promise<Knex.QueryBuilder> {
     if (Object.keys(filter).length !== 1) throw '[TODO] Return proper error';
     for (const key in filter) {
       const value: BaseType = <any>filter[key];
@@ -141,7 +145,7 @@ export class KnexConnector<S extends Identifiable> implements ConnectorConstruct
     throw '[TODO] Should not reach error';
   }
 
-  private lteFilter(query: Knex.QueryBuilder, filter: FilterCompare<S>): Knex.QueryBuilder {
+  private async lteFilter(query: Knex.QueryBuilder, filter: Partial<S>): Promise<Knex.QueryBuilder> {
     if (Object.keys(filter).length !== 1) throw '[TODO] Return proper error';
     for (const key in filter) {
       const value: BaseType = <any>filter[key];
@@ -152,11 +156,15 @@ export class KnexConnector<S extends Identifiable> implements ConnectorConstruct
     throw '[TODO] Should not reach error';
   }
 
-  private rawFilter(query: Knex.QueryBuilder, filter: FilterRaw): Knex.QueryBuilder {
+  private async rawFilter(query: Knex.QueryBuilder, filter: FilterRaw): Promise<Knex.QueryBuilder> {
     return query.whereRaw(filter.$query, <any>filter.$bindings);
   }
 
-  private specialFilter(query: Knex.QueryBuilder, filter: FilterSpecial<S>): Knex.QueryBuilder {
+  private async asyncFilter(query: Knex.QueryBuilder, filter: Promise<Filter<S>>): Promise<Knex.QueryBuilder> {
+    return this.filter(query, await filter);
+  }
+
+  private async specialFilter(query: Knex.QueryBuilder, filter: FilterSpecial<S>): Promise<Knex.QueryBuilder> {
     if (Object.keys(filter).length !== 1) throw '[TODO] Return proper error';
     if (filter.$and !== undefined)
       return this.andFilter(query, filter.$and);
@@ -184,23 +192,25 @@ export class KnexConnector<S extends Identifiable> implements ConnectorConstruct
       return this.ltFilter(query, filter.$lt);
     if (filter.$lte !== undefined)
       return this.lteFilter(query, filter.$lte);
+    if (filter.$async !== undefined)
+      return this.asyncFilter(query, filter.$async);
     if (filter.$raw !== undefined)
       return this.rawFilter(query, filter.$raw);
     throw '[TODO] Should not reach error';
   }
 
-  private filter(query: Knex.QueryBuilder, filter: Filter<S>): Knex.QueryBuilder {
+  private async filter(query: Knex.QueryBuilder, filter: Filter<S>): Promise<Knex.QueryBuilder> {
     for (const key in filter) {
       if (key.startsWith('$')) {
         return this.specialFilter(query, <FilterSpecial<S>>filter);
       }
     }
-    return this.propertyFilter(query, <FilterProperty<S>>filter);
+    return this.propertyFilter(query, <Partial<S>>filter);
   }
 
-  private collection(model: ModelStatic<S>): Knex.QueryBuilder {
+  private async collection(model: ModelStatic<S>): Promise<Knex.QueryBuilder> {
     const table = this.table(model);
-    let query = this.filter(table, model.filter);
+    let query = await this.filter(table, model.filter);
     if (model.limit < Number.MAX_SAFE_INTEGER) {
       query = query.limit(model.limit);
     }
@@ -211,7 +221,7 @@ export class KnexConnector<S extends Identifiable> implements ConnectorConstruct
   }
 
   async query(model: ModelStatic<S>): Promise<ModelConstructor<S>[]> {
-    let query = this.collection(model);
+    let query = await this.collection(model);
     for (const order of model.order) {
       for (const key in order) {
         const direction = order[key] === OrderDirection.asc ? 'asc' : 'desc';
@@ -226,8 +236,26 @@ export class KnexConnector<S extends Identifiable> implements ConnectorConstruct
     }
   }
 
+  async select(model: ModelStatic<S>, ...keys: (keyof S)[]): Promise<S[keyof S][][]> {
+    let query = await this.collection(model);
+    for (const order of model.order) {
+      for (const key in order) {
+        const direction = order[key] === OrderDirection.asc ? 'asc' : 'desc';
+        query = query.orderBy(key, direction);
+      }
+    }
+    try {
+      const rows: S[keyof S][][] = await query.select(...keys);
+      return rows;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+
   async count(model: ModelStatic<S>): Promise<number> {
-    const rows: S[] = await this.collection(model).count();
+    const query = await this.collection(model);
+    const rows: S[] = await query.count();
     if (rows.length >= 0) {
       for (const key in rows[0]) {
         return <any>rows[0][key];
@@ -237,12 +265,14 @@ export class KnexConnector<S extends Identifiable> implements ConnectorConstruct
   }
 
   async updateAll(model: ModelStatic<S>, attrs: Partial<S>): Promise<number> {
-    const count: number = await this.collection(model).update(attrs);
+    const query = await this.collection(model);
+    const count: number = query.update(attrs);
     return count;
   }
 
   async deleteAll(model: ModelStatic<S>): Promise<number> {
-    const count: number = await this.collection(model).del();
+    const query = await this.collection(model);
+    const count: number = await query.del();
     return count;
   }
 
