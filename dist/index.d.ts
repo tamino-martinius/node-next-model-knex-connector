@@ -21,10 +21,12 @@ export declare class KnexConnector<S extends Identifiable> implements ConnectorC
     private ltFilter(query, filter);
     private lteFilter(query, filter);
     private rawFilter(query, filter);
+    private asyncFilter(query, filter);
     private specialFilter(query, filter);
     private filter(query, filter);
     private collection(model);
     query(model: ModelStatic<S>): Promise<ModelConstructor<S>[]>;
+    select(model: ModelStatic<S>, ...keys: (keyof S)[]): Promise<S[keyof S][][]>;
     count(model: ModelStatic<S>): Promise<number>;
     updateAll(model: ModelStatic<S>, attrs: Partial<S>): Promise<number>;
     deleteAll(model: ModelStatic<S>): Promise<number>;

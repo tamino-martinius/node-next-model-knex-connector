@@ -58,181 +58,294 @@ var KnexConnector = (function () {
         return this.knex(this.tableName(model));
     };
     KnexConnector.prototype.propertyFilter = function (query, filter) {
-        return query.where(filter);
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2, query.where(filter)];
+            });
+        });
     };
     KnexConnector.prototype.andFilter = function (query, filters) {
-        var self = this;
-        var _loop_1 = function (filter) {
-            query = query.andWhere(function () {
-                self.filter(this, filter);
+        return __awaiter(this, void 0, void 0, function () {
+            var self, _loop_1, _i, filters_1, filter;
+            return __generator(this, function (_a) {
+                self = this;
+                _loop_1 = function (filter) {
+                    query = query.andWhere(function () {
+                        self.filter(this, filter);
+                    });
+                };
+                for (_i = 0, filters_1 = filters; _i < filters_1.length; _i++) {
+                    filter = filters_1[_i];
+                    _loop_1(filter);
+                }
+                return [2, query];
             });
-        };
-        for (var _i = 0, filters_1 = filters; _i < filters_1.length; _i++) {
-            var filter = filters_1[_i];
-            _loop_1(filter);
-        }
-        return query;
+        });
     };
     KnexConnector.prototype.notFilter = function (query, filter) {
-        var self = this;
-        return query.whereNot(function () {
-            self.filter(this, filter);
+        return __awaiter(this, void 0, void 0, function () {
+            var self;
+            return __generator(this, function (_a) {
+                self = this;
+                return [2, query.whereNot(function () {
+                        self.filter(this, filter);
+                    })];
+            });
         });
     };
     KnexConnector.prototype.orFilter = function (query, filters) {
-        var self = this;
-        var _loop_2 = function (filter) {
-            query = query.orWhere(function () {
-                self.filter(this, filter);
+        return __awaiter(this, void 0, void 0, function () {
+            var self, _loop_2, _i, filters_2, filter;
+            return __generator(this, function (_a) {
+                self = this;
+                _loop_2 = function (filter) {
+                    query = query.orWhere(function () {
+                        self.filter(this, filter);
+                    });
+                };
+                for (_i = 0, filters_2 = filters; _i < filters_2.length; _i++) {
+                    filter = filters_2[_i];
+                    _loop_2(filter);
+                }
+                return [2, query];
             });
-        };
-        for (var _i = 0, filters_2 = filters; _i < filters_2.length; _i++) {
-            var filter = filters_2[_i];
-            _loop_2(filter);
-        }
-        return query;
+        });
     };
     KnexConnector.prototype.inFilter = function (query, filter) {
-        if (Object.keys(filter).length !== 1)
-            throw '[TODO] Return proper error';
-        for (var key in filter) {
-            return query.whereIn(key, filter[key]);
-        }
-        throw '[TODO] Should not reach error';
+        return __awaiter(this, void 0, void 0, function () {
+            var key;
+            return __generator(this, function (_a) {
+                if (Object.keys(filter).length !== 1)
+                    throw '[TODO] Return proper error';
+                for (key in filter) {
+                    return [2, query.whereIn(key, filter[key])];
+                }
+                throw '[TODO] Should not reach error';
+            });
+        });
     };
     KnexConnector.prototype.notInFilter = function (query, filter) {
-        if (Object.keys(filter).length !== 1)
-            throw '[TODO] Return proper error';
-        for (var key in filter) {
-            return query.whereNotIn(key, filter[key]);
-        }
-        throw '[TODO] Should not reach error';
+        return __awaiter(this, void 0, void 0, function () {
+            var key;
+            return __generator(this, function (_a) {
+                if (Object.keys(filter).length !== 1)
+                    throw '[TODO] Return proper error';
+                for (key in filter) {
+                    return [2, query.whereNotIn(key, filter[key])];
+                }
+                throw '[TODO] Should not reach error';
+            });
+        });
     };
     KnexConnector.prototype.nullFilter = function (query, key) {
-        return query.whereNull(key);
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2, query.whereNull(key)];
+            });
+        });
     };
     KnexConnector.prototype.notNullFilter = function (query, key) {
-        return query.whereNotNull(key);
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2, query.whereNotNull(key)];
+            });
+        });
     };
     KnexConnector.prototype.betweenFilter = function (query, filter) {
-        if (Object.keys(filter).length !== 1)
-            throw '[TODO] Return proper error';
-        for (var key in filter) {
-            return query.andWhereBetween(key, [filter[key].from, filter[key].to]);
-        }
-        throw '[TODO] Should not reach error';
+        return __awaiter(this, void 0, void 0, function () {
+            var key, filterBetween;
+            return __generator(this, function (_a) {
+                if (Object.keys(filter).length !== 1)
+                    throw '[TODO] Return proper error';
+                for (key in filter) {
+                    filterBetween = filter[key];
+                    if (filterBetween !== undefined) {
+                        return [2, query.andWhereBetween(key, [filterBetween.from, filterBetween.to])];
+                    }
+                }
+                throw '[TODO] Should not reach error';
+            });
+        });
     };
     KnexConnector.prototype.notBetweenFilter = function (query, filter) {
-        if (Object.keys(filter).length !== 1)
-            throw '[TODO] Return proper error';
-        for (var key in filter) {
-            return query.andWhereNotBetween(key, [filter[key].from, filter[key].to]);
-        }
-        throw '[TODO] Should not reach error';
+        return __awaiter(this, void 0, void 0, function () {
+            var key, filterBetween;
+            return __generator(this, function (_a) {
+                if (Object.keys(filter).length !== 1)
+                    throw '[TODO] Return proper error';
+                for (key in filter) {
+                    filterBetween = filter[key];
+                    if (filterBetween !== undefined) {
+                        return [2, query.andWhereNotBetween(key, [filterBetween.from, filterBetween.to])];
+                    }
+                }
+                throw '[TODO] Should not reach error';
+            });
+        });
     };
     KnexConnector.prototype.gtFilter = function (query, filter) {
-        if (Object.keys(filter).length !== 1)
-            throw '[TODO] Return proper error';
-        for (var key in filter) {
-            return query.where(key, '>', filter[key]);
-        }
-        throw '[TODO] Should not reach error';
+        return __awaiter(this, void 0, void 0, function () {
+            var key;
+            return __generator(this, function (_a) {
+                if (Object.keys(filter).length !== 1)
+                    throw '[TODO] Return proper error';
+                for (key in filter) {
+                    return [2, query.where(key, '>', filter[key])];
+                }
+                throw '[TODO] Should not reach error';
+            });
+        });
     };
     KnexConnector.prototype.gteFilter = function (query, filter) {
-        if (Object.keys(filter).length !== 1)
-            throw '[TODO] Return proper error';
-        for (var key in filter) {
-            var value = filter[key];
-            if (value !== undefined) {
-                return query.where(key, '>=', value);
-            }
-        }
-        throw '[TODO] Should not reach error';
+        return __awaiter(this, void 0, void 0, function () {
+            var key, value;
+            return __generator(this, function (_a) {
+                if (Object.keys(filter).length !== 1)
+                    throw '[TODO] Return proper error';
+                for (key in filter) {
+                    value = filter[key];
+                    if (value !== undefined) {
+                        return [2, query.where(key, '>=', value)];
+                    }
+                }
+                throw '[TODO] Should not reach error';
+            });
+        });
     };
     KnexConnector.prototype.ltFilter = function (query, filter) {
-        if (Object.keys(filter).length !== 1)
-            throw '[TODO] Return proper error';
-        for (var key in filter) {
-            var value = filter[key];
-            if (value !== undefined) {
-                return query.where(key, '<', value);
-            }
-        }
-        throw '[TODO] Should not reach error';
+        return __awaiter(this, void 0, void 0, function () {
+            var key, value;
+            return __generator(this, function (_a) {
+                if (Object.keys(filter).length !== 1)
+                    throw '[TODO] Return proper error';
+                for (key in filter) {
+                    value = filter[key];
+                    if (value !== undefined) {
+                        return [2, query.where(key, '<', value)];
+                    }
+                }
+                throw '[TODO] Should not reach error';
+            });
+        });
     };
     KnexConnector.prototype.lteFilter = function (query, filter) {
-        if (Object.keys(filter).length !== 1)
-            throw '[TODO] Return proper error';
-        for (var key in filter) {
-            var value = filter[key];
-            if (value !== undefined) {
-                return query.where(key, '<=', value);
-            }
-        }
-        throw '[TODO] Should not reach error';
+        return __awaiter(this, void 0, void 0, function () {
+            var key, value;
+            return __generator(this, function (_a) {
+                if (Object.keys(filter).length !== 1)
+                    throw '[TODO] Return proper error';
+                for (key in filter) {
+                    value = filter[key];
+                    if (value !== undefined) {
+                        return [2, query.where(key, '<=', value)];
+                    }
+                }
+                throw '[TODO] Should not reach error';
+            });
+        });
     };
     KnexConnector.prototype.rawFilter = function (query, filter) {
-        return query.whereRaw(filter.$query, filter.$bindings);
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2, query.whereRaw(filter.$query, filter.$bindings)];
+            });
+        });
+    };
+    KnexConnector.prototype.asyncFilter = function (query, filter) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        _a = this.filter;
+                        _b = [query];
+                        return [4, filter];
+                    case 1: return [2, _a.apply(this, _b.concat([_c.sent()]))];
+                }
+            });
+        });
     };
     KnexConnector.prototype.specialFilter = function (query, filter) {
-        if (Object.keys(filter).length !== 1)
-            throw '[TODO] Return proper error';
-        if (filter.$and !== undefined)
-            return this.andFilter(query, filter.$and);
-        if (filter.$or !== undefined)
-            return this.orFilter(query, filter.$or);
-        if (filter.$not !== undefined)
-            return this.notFilter(query, filter.$not);
-        if (filter.$in !== undefined)
-            return this.inFilter(query, filter.$in);
-        if (filter.$notIn !== undefined)
-            return this.notInFilter(query, filter.$notIn);
-        if (filter.$null !== undefined)
-            return this.nullFilter(query, filter.$null);
-        if (filter.$notNull !== undefined)
-            return this.notNullFilter(query, filter.$notNull);
-        if (filter.$between !== undefined)
-            return this.betweenFilter(query, filter.$between);
-        if (filter.$notBetween !== undefined)
-            return this.notBetweenFilter(query, filter.$notBetween);
-        if (filter.$gt !== undefined)
-            return this.gtFilter(query, filter.$gt);
-        if (filter.$gte !== undefined)
-            return this.gteFilter(query, filter.$gte);
-        if (filter.$lt !== undefined)
-            return this.ltFilter(query, filter.$lt);
-        if (filter.$lte !== undefined)
-            return this.lteFilter(query, filter.$lte);
-        if (filter.$raw !== undefined)
-            return this.rawFilter(query, filter.$raw);
-        throw '[TODO] Should not reach error';
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                if (Object.keys(filter).length !== 1)
+                    throw '[TODO] Return proper error';
+                if (filter.$and !== undefined)
+                    return [2, this.andFilter(query, filter.$and)];
+                if (filter.$or !== undefined)
+                    return [2, this.orFilter(query, filter.$or)];
+                if (filter.$not !== undefined)
+                    return [2, this.notFilter(query, filter.$not)];
+                if (filter.$in !== undefined)
+                    return [2, this.inFilter(query, filter.$in)];
+                if (filter.$notIn !== undefined)
+                    return [2, this.notInFilter(query, filter.$notIn)];
+                if (filter.$null !== undefined)
+                    return [2, this.nullFilter(query, filter.$null)];
+                if (filter.$notNull !== undefined)
+                    return [2, this.notNullFilter(query, filter.$notNull)];
+                if (filter.$between !== undefined)
+                    return [2, this.betweenFilter(query, filter.$between)];
+                if (filter.$notBetween !== undefined)
+                    return [2, this.notBetweenFilter(query, filter.$notBetween)];
+                if (filter.$gt !== undefined)
+                    return [2, this.gtFilter(query, filter.$gt)];
+                if (filter.$gte !== undefined)
+                    return [2, this.gteFilter(query, filter.$gte)];
+                if (filter.$lt !== undefined)
+                    return [2, this.ltFilter(query, filter.$lt)];
+                if (filter.$lte !== undefined)
+                    return [2, this.lteFilter(query, filter.$lte)];
+                if (filter.$async !== undefined)
+                    return [2, this.asyncFilter(query, filter.$async)];
+                if (filter.$raw !== undefined)
+                    return [2, this.rawFilter(query, filter.$raw)];
+                throw '[TODO] Should not reach error';
+            });
+        });
     };
     KnexConnector.prototype.filter = function (query, filter) {
-        for (var key in filter) {
-            if (key.startsWith('$')) {
-                return this.specialFilter(query, filter);
-            }
-        }
-        return this.propertyFilter(query, filter);
+        return __awaiter(this, void 0, void 0, function () {
+            var key;
+            return __generator(this, function (_a) {
+                for (key in filter) {
+                    if (key.startsWith('$')) {
+                        return [2, this.specialFilter(query, filter)];
+                    }
+                }
+                return [2, this.propertyFilter(query, filter)];
+            });
+        });
     };
     KnexConnector.prototype.collection = function (model) {
-        var table = this.table(model);
-        var query = this.filter(table, model.filter);
-        if (model.limit < Number.MAX_SAFE_INTEGER) {
-            query = query.limit(model.limit);
-        }
-        if (model.skip > 0) {
-            query = query.offset(model.skip);
-        }
-        return query;
+        return __awaiter(this, void 0, void 0, function () {
+            var table, query;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        table = this.table(model);
+                        return [4, this.filter(table, model.filter)];
+                    case 1:
+                        query = _a.sent();
+                        if (model.limit < Number.MAX_SAFE_INTEGER) {
+                            query = query.limit(model.limit);
+                        }
+                        if (model.skip > 0) {
+                            query = query.offset(model.skip);
+                        }
+                        return [2, query];
+                }
+            });
+        });
     };
     KnexConnector.prototype.query = function (model) {
         return __awaiter(this, void 0, void 0, function () {
             var query, _i, _a, order, key, direction, rows, error_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0:
-                        query = this.collection(model);
+                    case 0: return [4, this.collection(model)];
+                    case 1:
+                        query = _b.sent();
                         for (_i = 0, _a = model.order; _i < _a.length; _i++) {
                             order = _a[_i];
                             for (key in order) {
@@ -240,28 +353,65 @@ var KnexConnector = (function () {
                                 query = query.orderBy(key, direction);
                             }
                         }
-                        _b.label = 1;
-                    case 1:
-                        _b.trys.push([1, 3, , 4]);
-                        return [4, query.select('*')];
+                        _b.label = 2;
                     case 2:
+                        _b.trys.push([2, 4, , 5]);
+                        return [4, query.select('*')];
+                    case 3:
                         rows = _b.sent();
                         return [2, rows.map(function (row) { return new model(row); })];
-                    case 3:
+                    case 4:
                         error_1 = _b.sent();
                         throw error_1;
-                    case 4: return [2];
+                    case 5: return [2];
+                }
+            });
+        });
+    };
+    KnexConnector.prototype.select = function (model) {
+        var keys = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            keys[_i - 1] = arguments[_i];
+        }
+        return __awaiter(this, void 0, void 0, function () {
+            var query, _a, _b, order, key, direction, rows, error_2;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0: return [4, this.collection(model)];
+                    case 1:
+                        query = _c.sent();
+                        for (_a = 0, _b = model.order; _a < _b.length; _a++) {
+                            order = _b[_a];
+                            for (key in order) {
+                                direction = order[key] === core_1.OrderDirection.asc ? 'asc' : 'desc';
+                                query = query.orderBy(key, direction);
+                            }
+                        }
+                        _c.label = 2;
+                    case 2:
+                        _c.trys.push([2, 4, , 5]);
+                        return [4, query.select.apply(query, keys)];
+                    case 3:
+                        rows = _c.sent();
+                        return [2, rows];
+                    case 4:
+                        error_2 = _c.sent();
+                        throw error_2;
+                    case 5: return [2];
                 }
             });
         });
     };
     KnexConnector.prototype.count = function (model) {
         return __awaiter(this, void 0, void 0, function () {
-            var rows, key;
+            var query, rows, key;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4, this.collection(model).count()];
+                    case 0: return [4, this.collection(model)];
                     case 1:
+                        query = _a.sent();
+                        return [4, query.count()];
+                    case 2:
                         rows = _a.sent();
                         if (rows.length >= 0) {
                             for (key in rows[0]) {
@@ -275,12 +425,13 @@ var KnexConnector = (function () {
     };
     KnexConnector.prototype.updateAll = function (model, attrs) {
         return __awaiter(this, void 0, void 0, function () {
-            var count;
+            var query, count;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4, this.collection(model).update(attrs)];
+                    case 0: return [4, this.collection(model)];
                     case 1:
-                        count = _a.sent();
+                        query = _a.sent();
+                        count = query.update(attrs);
                         return [2, count];
                 }
             });
@@ -288,11 +439,14 @@ var KnexConnector = (function () {
     };
     KnexConnector.prototype.deleteAll = function (model) {
         return __awaiter(this, void 0, void 0, function () {
-            var count;
+            var query, count;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4, this.collection(model).del()];
+                    case 0: return [4, this.collection(model)];
                     case 1:
+                        query = _a.sent();
+                        return [4, query.del()];
+                    case 2:
                         count = _a.sent();
                         return [2, count];
                 }
