@@ -1,8 +1,10 @@
 import Knex from 'knex';
+
 import {
   NextModel,
   ConnectorConstructor,
   Filter,
+  DataType,
 } from '@next-model/core';
 import KnexConnector from '..';
 
@@ -79,9 +81,9 @@ class User extends NextModel<UserSchema>() {
 
   static get schema() {
     return {
-      id: { type: 'integer' },
-      name: { type: 'string' },
-      age: { type: 'integer' },
+      id: { type: DataType.integer },
+      name: { type: DataType.string },
+      age: { type: DataType.integer },
     };
   }
 
@@ -498,7 +500,7 @@ describe('KnexConnector', () => {
                       expect(count).toEqual(ids.length);
                       const instances = await connector.query(Klass);
                       for (const instance of instances) {
-                        expect(instance.name).toEqual('updated');
+                        expect((<User>instance).name).toEqual('updated');
                       }
                     });
                   } else {
