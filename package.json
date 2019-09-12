@@ -27,22 +27,21 @@
     "preversion": "npm run compile && git add ."
   },
   "devDependencies": {
-    "@types/knex": "^0.14.12",
-    "@types/faker": "^4.1.2",
-    "@types/jest": "^22.2.3",
-    "@types/node": "^9.6.6",
-    "@next-model/core": "^1.0.0-alpha.19",
-    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
-    "codecov": "^3.0.0",
+    "@types/knex": "^0.16.1",
+    "@types/faker": "^4.1.5",
+    "@types/jest": "^24.0.18",
+    "@types/node": "^12.7.5",
+    "@next-model/core": "^1.0.0-alpha.22",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
+    "codecov": "^3.5.0",
     "faker": "^4.1.0",
-    "jest": "^22.4.4",
-    "ts-jest": "^22.4.6",
-    "typescript": "^2.8.3",
-    "sqlite3": "^4.0.0",
-    "knex": "^0.14.6"
+    "jest": "^24.9.0",
+    "ts-jest": "^24.0.2",
+    "typescript": "^3.6.3",
+    "sqlite3": "^4.1.0"
   },
-  "peerDependencies": {
-    "knex": "^0.14.6"
+  "dependencies": {
+    "knex": "^0.19.4"
   },
   "jest": {
     "transform": {
