@@ -41,15 +41,17 @@
     "knex": "^0.19.4"
   },
   "jest": {
-    "transform": {
-      ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
-    },
+    "preset": "ts-jest",
     "testRegex": "(\\.(test|spec))\\.(ts|tsx|js)$",
     "moduleFileExtensions": [
       "ts",
-      "tsx",
-      "js",
-      "json"
+      "js"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!src/__benchmark__/**",
+      "!src/__tests__/**",
+      "!src/__mocks__/**"
     ]
   }
 }
