@@ -29,187 +29,148 @@ export class KnexConnector implements Connector {
     return this.knex(tableName);
   }
 
-  private async propertyFilter(
-    query: Knex.QueryBuilder<any, any>,
-    filter: Dict<any>,
-  ): Promise<Knex.QueryBuilder<any, any>> {
-    return query.where(filter);
+  private async propertyFilter(query: Knex.QueryBuilder, filter: Dict<any>) {
+    query = query.where(filter);
+    return { query };
   }
 
-  private async andFilter(
-    query: Knex.QueryBuilder<any, any>,
-    filters: Filter<Dict<any>>[],
-  ): Promise<Knex.QueryBuilder<any, any>> {
+  private async andFilter(query: Knex.QueryBuilder, filters: Filter<Dict<any>>[]) {
     const self = this;
     for (const filter of filters) {
-      query = query.andWhere(function() {
-        self.filter(this, filter);
+      query = query.andWhere(async function() {
+        await self.filter(this, filter);
       });
     }
-    return query;
+    return { query };
   }
 
-  private async notFilter(
-    query: Knex.QueryBuilder<any, any>,
-    filter: Filter<Dict<any>>,
-  ): Promise<Knex.QueryBuilder<any, any>> {
+  private async notFilter(query: Knex.QueryBuilder, filter: Filter<Dict<any>>) {
     const self = this;
-    return query.whereNot(function() {
-      self.filter(this, filter);
+    query = query.whereNot(async function() {
+      (await self.filter(this, filter)).query;
     });
+    return { query };
   }
 
-  private async orFilter(
-    query: Knex.QueryBuilder<any, any>,
-    filters: Filter<Dict<any>>[],
-  ): Promise<Knex.QueryBuilder<any, any>> {
+  private async orFilter(query: Knex.QueryBuilder, filters: Filter<Dict<any>>[]) {
     const self = this;
     for (const filter of filters) {
       query = query.orWhere(function() {
         self.filter(this, filter);
       });
     }
-    return query;
+    return { query };
   }
 
-  private async inFilter(
-    query: Knex.QueryBuilder<any, any>,
-    filter: Partial<FilterIn<Dict<any>>>,
-  ): Promise<Knex.QueryBuilder<any, any>> {
+  private async inFilter(query: Knex.QueryBuilder, filter: Partial<FilterIn<Dict<any>>>) {
     if (Object.keys(filter).length !== 1) throw '[TODO] Return proper error';
     for (const key in filter) {
-      return query.whereIn(key, <any>filter[key]);
+      return { query: query.whereIn(key, <any>filter[key]) };
     }
     throw '[TODO] Should not reach error';
   }
 
-  private async notInFilter(
-    query: Knex.QueryBuilder<any, any>,
-    filter: Partial<FilterIn<Dict<any>>>,
-  ): Promise<Knex.QueryBuilder<any, any>> {
+  private async notInFilter(query: Knex.QueryBuilder, filter: Partial<FilterIn<Dict<any>>>) {
     if (Object.keys(filter).length !== 1) throw '[TODO] Return proper error';
     for (const key in filter) {
-      return query.whereNotIn(key, <any>filter[key]);
+      return { query: query.whereNotIn(key, <any>filter[key]) };
     }
     throw '[TODO] Should not reach error';
   }
 
-  private async nullFilter(
-    query: Knex.QueryBuilder<any, any>,
-    key: string,
-  ): Promise<Knex.QueryBuilder<any, any>> {
-    return query.whereNull(key);
+  private async nullFilter(query: Knex.QueryBuilder, key: string) {
+    return { query: query.whereNull(key) };
   }
 
-  private async notNullFilter(
-    query: Knex.QueryBuilder<any, any>,
-    key: string,
-  ): Promise<Knex.QueryBuilder<any, any>> {
-    return query.whereNotNull(key);
+  private async notNullFilter(query: Knex.QueryBuilder, key: string) {
+    return { query: query.whereNotNull(key) };
   }
 
-  private async betweenFilter(
-    query: Knex.QueryBuilder<any, any>,
-    filter: Partial<FilterBetween<Dict<any>>>,
-  ): Promise<Knex.QueryBuilder<any, any>> {
+  private async betweenFilter(query: Knex.QueryBuilder, filter: Partial<FilterBetween<Dict<any>>>) {
     if (Object.keys(filter).length !== 1) throw '[TODO] Return proper error';
     for (const key in filter) {
       const filterBetween = filter[key];
       if (filterBetween !== undefined) {
-        return query.andWhereBetween(key, [<any>filterBetween.from, <any>filterBetween.to]);
+        return { query: query.andWhereBetween(key, [filterBetween.from, filterBetween.to]) };
       }
     }
     throw '[TODO] Should not reach error';
   }
 
   private async notBetweenFilter(
-    query: Knex.QueryBuilder<any, any>,
+    query: Knex.QueryBuilder,
     filter: Partial<FilterBetween<Dict<any>>>,
-  ): Promise<Knex.QueryBuilder<any, any>> {
+  ) {
     if (Object.keys(filter).length !== 1) throw '[TODO] Return proper error';
     for (const key in filter) {
       const filterBetween = filter[key];
       if (filterBetween !== undefined) {
-        return query.andWhereNotBetween(key, [<any>filterBetween.from, <any>filterBetween.to]);
+        return {
+          query: query.andWhereNotBetween(key, [<any>filterBetween.from, <any>filterBetween.to]),
+        };
       }
     }
     throw '[TODO] Should not reach error';
   }
 
-  private async gtFilter(
-    query: Knex.QueryBuilder<any, any>,
-    filter: Partial<Dict<any>>,
-  ): Promise<Knex.QueryBuilder<any, any>> {
+  private async gtFilter(query: Knex.QueryBuilder, filter: Partial<Dict<any>>) {
     if (Object.keys(filter).length !== 1) throw '[TODO] Return proper error';
     for (const key in filter) {
-      return query.where(key, '>', <any>filter[key]);
+      return { query: query.where(key, '>', <any>filter[key]) };
     }
     throw '[TODO] Should not reach error';
   }
 
-  private async gteFilter(
-    query: Knex.QueryBuilder<any, any>,
-    filter: Partial<Dict<any>>,
-  ): Promise<Knex.QueryBuilder<any, any>> {
+  private async gteFilter(query: Knex.QueryBuilder, filter: Partial<Dict<any>>) {
     if (Object.keys(filter).length !== 1) throw '[TODO] Return proper error';
     for (const key in filter) {
       const value: BaseType = <any>filter[key];
       if (value !== undefined) {
-        return query.where(key, '>=', value);
+        return { query: query.where(key, '>=', value) };
       }
     }
     throw '[TODO] Should not reach error';
   }
 
-  private async ltFilter(
-    query: Knex.QueryBuilder<any, any>,
-    filter: Partial<Dict<any>>,
-  ): Promise<Knex.QueryBuilder<any, any>> {
+  private async ltFilter(query: Knex.QueryBuilder, filter: Partial<Dict<any>>) {
     if (Object.keys(filter).length !== 1) throw '[TODO] Return proper error';
     for (const key in filter) {
       const value: BaseType = <any>filter[key];
       if (value !== undefined) {
-        return query.where(key, '<', value);
+        return { query: query.where(key, '<', value) };
       }
     }
     throw '[TODO] Should not reach error';
   }
 
-  private async lteFilter(
-    query: Knex.QueryBuilder<any, any>,
-    filter: Partial<Dict<any>>,
-  ): Promise<Knex.QueryBuilder<any, any>> {
+  private async lteFilter(query: Knex.QueryBuilder, filter: Partial<Dict<any>>) {
     if (Object.keys(filter).length !== 1) throw '[TODO] Return proper error';
     for (const key in filter) {
       const value: BaseType = <any>filter[key];
       if (value !== undefined) {
-        return query.where(key, '<=', value);
+        return { query: query.where(key, '<=', value) };
       }
     }
     throw '[TODO] Should not reach error';
   }
 
-  private async rawFilter(
-    query: Knex.QueryBuilder<any, any>,
-    filter: FilterRaw,
-  ): Promise<Knex.QueryBuilder<any, any>> {
-    return query.whereRaw(
-      filter.$query,
-      filter.$bindings.map(item => (item === null || item === undefined ? false : item)),
-    );
+  private async rawFilter(query: Knex.QueryBuilder, filter: FilterRaw) {
+    return {
+      query: query.whereRaw(
+        filter.$query,
+        filter.$bindings.map(item => (item === null || item === undefined ? false : item)),
+      ),
+    };
   }
 
-  private async asyncFilter(
-    query: Knex.QueryBuilder<any, any>,
-    filter: Promise<Filter<Dict<any>>>,
-  ): Promise<Knex.QueryBuilder<any, any>> {
+  private async asyncFilter(query: Knex.QueryBuilder, filter: Promise<Filter<Dict<any>>>) {
     return this.filter(query, await filter);
   }
 
   private async specialFilter(
-    query: Knex.QueryBuilder<any, any>,
+    query: Knex.QueryBuilder,
     filter: FilterSpecial<Dict<any>>,
-  ): Promise<Knex.QueryBuilder<any, any>> {
+  ): Promise<{ query: Knex.QueryBuilder }> {
     if (Object.keys(filter).length !== 1) throw '[TODO] Return proper error';
     if (filter.$and !== undefined) return this.andFilter(query, filter.$and);
     if (filter.$or !== undefined) return this.orFilter(query, filter.$or);
@@ -229,32 +190,32 @@ export class KnexConnector implements Connector {
     throw '[TODO] Should not reach error';
   }
 
-  private async filter(
-    query: Knex.QueryBuilder<any, any>,
-    filter: Filter<Dict<any>>,
-  ): Promise<Knex.QueryBuilder<any, any>> {
+  private async filter(query: Knex.QueryBuilder, filter: Filter<Dict<any>> | undefined) {
+    if (!filter || Object.keys(filter).length === 0) {
+      return { query };
+    }
     for (const key in filter) {
       if (key.startsWith('$')) {
         return this.specialFilter(query, <FilterSpecial<Dict<any>>>filter);
       }
     }
-    return this.propertyFilter(query, <Partial<Dict<any>>>filter);
+    return await this.propertyFilter(query, <Partial<Dict<any>>>filter);
   }
 
-  private async collection(scope: Scope): Promise<Knex.QueryBuilder<any, any>> {
+  private async collection(scope: Scope) {
     const table = this.table(scope.tableName);
-    let query = await this.filter(table, scope.filter || {});
+    let { query } = await this.filter(table, scope.filter);
     if (scope.limit !== undefined) {
       query = query.limit(scope.limit);
     }
     if (scope.skip !== undefined) {
       query = query.offset(scope.skip);
     }
-    return query;
+    return { query };
   }
 
   async query(scope: Scope): Promise<Dict<any>[]> {
-    let query = await this.collection(scope);
+    let { query } = await this.collection(scope);
     for (const order of scope.order || []) {
       const direction = order.dir === SortDirection.Asc ? 'asc' : 'desc';
       query = query.orderBy(order.key, direction);
@@ -268,7 +229,7 @@ export class KnexConnector implements Connector {
   }
 
   async count(scope: Scope): Promise<number> {
-    const query = await this.collection(scope);
+    const { query } = await this.collection(scope);
     const rows: Dict<any>[] = await query.count();
     if (rows.length >= 0) {
       for (const key in rows[0]) {
@@ -279,7 +240,7 @@ export class KnexConnector implements Connector {
   }
 
   async select(scope: Scope, ...keys: string[]): Promise<Dict<any>[]> {
-    let query = await this.collection(scope);
+    let { query } = await this.collection(scope);
     for (const order of scope.order || []) {
       const direction = order.dir === SortDirection.Asc ? 'asc' : 'desc';
       query = query.orderBy(order.key, direction);
@@ -293,15 +254,15 @@ export class KnexConnector implements Connector {
   }
 
   async updateAll(scope: Scope, attrs: Dict<any>): Promise<Dict<any>[]> {
-    const query = await this.collection(scope);
-    const rows: Dict<any>[] = query.update(attrs).returning(`${scope.tableName}.*`);
-    return rows;
+    const { query } = await this.collection(scope);
+    const rows = await query.update(attrs).returning(`${scope.tableName}.*`);
+    return rows as Dict<any>[];
   }
 
   async deleteAll(scope: Scope): Promise<Dict<any>[]> {
-    const query = await this.collection(scope);
-    const rows: Dict<any>[] = await query.del().returning(`${scope.tableName}.*`);
-    return rows;
+    const { query } = await this.collection(scope);
+    const rows = await query.del().returning(`${scope.tableName}.*`);
+    return rows as Dict<any>[];
   }
 
   async batchInsert(
@@ -310,8 +271,8 @@ export class KnexConnector implements Connector {
     items: Dict<any>[],
   ): Promise<Dict<any>[]> {
     const table = this.table(tableName);
-    const rows: Dict<any>[] = await table.insert(items).returning(`${tableName}.*`);
-    return [];
+    const rows = await table.insert(items).returning(`${tableName}.*`);
+    return rows as Dict<any>[];
   }
 
   async execute(query: string, bindings: BaseType | BaseType[]): Promise<any[]> {
