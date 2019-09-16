@@ -105,171 +105,171 @@ afterEach(cleanDb);
 
 const randomIndex = faker.random.number(2);
 const validUser = () => [user1, user2, user3][randomIndex] as User;
-const validId = () => validUser().attributes.id;
-const user1Id = () => (user1 ? user1.attributes.id : 0);
-const user2Id = () => (user2 ? user2.attributes.id : 0);
-const user3Id = () => (user3 ? user3.attributes.id : 0);
+const uid = () => validUser().attributes.id;
+const u1 = () => (user1 ? user1.attributes.id : 0);
+const u2 = () => (user2 ? user2.attributes.id : 0);
+const u3 = () => (user3 ? user3.attributes.id : 0);
 
 const filterSpecGroups: FilterSpecGroup = {
-  none: [{ filter: () => ({}), results: () => [user1Id(), user2Id(), user3Id()] }],
+  none: [{ filter: () => ({}), results: () => [u1(), u2(), u3()] }],
   property: [
-    { filter: () => ({ id: validId() }), results: () => [validId()] },
-    { filter: () => ({ id: user1Id(), name: 'foo' }), results: () => [user1Id()] },
-    { filter: () => ({ id: user1Id(), name: 'bar' }), results: () => [] },
-    { filter: () => ({ age: 21 }), results: () => [user2Id(), user3Id()] },
+    { filter: () => ({ id: uid() }), results: () => [uid()] },
+    { filter: () => ({ id: u1(), name: 'foo' }), results: () => [u1()] },
+    { filter: () => ({ id: u1(), name: 'bar' }), results: () => [] },
+    { filter: () => ({ age: 21 }), results: () => [u2(), u3()] },
     { filter: () => ({ id: 0 }), results: () => [] },
   ],
   $and: [
-    { filter: () => ({ $and: [] }), results: () => [user1Id(), user2Id(), user3Id()] },
-    { filter: () => ({ $and: [{ id: validId() }] }), results: () => [validId()] },
-    { filter: () => ({ $and: [{ id: user2Id() }, { id: user3Id() }] }), results: () => [] },
+    { filter: () => ({ $and: [] }), results: () => [u1(), u2(), u3()] },
+    { filter: () => ({ $and: [{ id: uid() }] }), results: () => [uid()] },
+    { filter: () => ({ $and: [{ id: u2() }, { id: u3() }] }), results: () => [] },
     {
-      filter: () => ({ $and: [{ id: user2Id() }, { id: user2Id() }] }),
-      results: () => [user2Id()],
+      filter: () => ({ $and: [{ id: u2() }, { id: u2() }] }),
+      results: () => [u2()],
     },
   ],
   $not: [
-    { filter: () => ({ $not: {} }), results: () => [user1Id(), user2Id(), user3Id()] },
-    { filter: () => ({ $not: { id: user2Id() } }), results: () => [user1Id(), user3Id()] },
-    { filter: () => ({ $not: { id: 0 } }), results: () => [user1Id(), user2Id(), user3Id()] },
+    { filter: () => ({ $not: {} }), results: () => [u1(), u2(), u3()] },
+    { filter: () => ({ $not: { id: u2() } }), results: () => [u1(), u3()] },
+    { filter: () => ({ $not: { id: 0 } }), results: () => [u1(), u2(), u3()] },
   ],
   $or: [
-    { filter: () => ({ $or: [] }), results: () => [user1Id(), user2Id(), user3Id()] },
-    { filter: () => ({ $or: [{ id: validId() }] }), results: () => [validId()] },
+    { filter: () => ({ $or: [] }), results: () => [u1(), u2(), u3()] },
+    { filter: () => ({ $or: [{ id: uid() }] }), results: () => [uid()] },
     {
-      filter: () => ({ $or: [{ id: user2Id() }, { id: user3Id() }] }),
-      results: () => [user2Id(), user3Id()],
+      filter: () => ({ $or: [{ id: u2() }, { id: u3() }] }),
+      results: () => [u2(), u3()],
     },
-    { filter: () => ({ $or: [{ id: user2Id() }, { id: user2Id() }] }), results: () => [user2Id()] },
+    { filter: () => ({ $or: [{ id: u2() }, { id: u2() }] }), results: () => [u2()] },
   ],
   $in: [
     { filter: () => ({ $in: {} }), results: '[TODO] Return proper error' },
-    { filter: () => ({ $in: { id: [validId()] } }), results: () => [validId()] },
+    { filter: () => ({ $in: { id: [uid()] } }), results: () => [uid()] },
     {
-      filter: () => ({ $in: { id: [user2Id(), user3Id()] } }),
-      results: () => [user2Id(), user3Id()],
+      filter: () => ({ $in: { id: [u2(), u3()] } }),
+      results: () => [u2(), u3()],
     },
-    { filter: () => ({ $in: { id: [user2Id(), user2Id()] } }), results: () => [user2Id()] },
+    { filter: () => ({ $in: { id: [u2(), u2()] } }), results: () => [u2()] },
     {
-      filter: () => ({ $in: { id: [user1Id()], name: ['foo'] } }),
+      filter: () => ({ $in: { id: [u1()], name: ['foo'] } }),
       results: '[TODO] Return proper error',
     },
   ],
   $notIn: [
     { filter: () => ({ $notIn: {} }), results: '[TODO] Return proper error' },
-    { filter: () => ({ $notIn: { id: [user2Id()] } }), results: () => [user1Id(), user3Id()] },
-    { filter: () => ({ $notIn: { id: [user2Id(), user3Id()] } }), results: () => [user1Id()] },
+    { filter: () => ({ $notIn: { id: [u2()] } }), results: () => [u1(), u3()] },
+    { filter: () => ({ $notIn: { id: [u2(), u3()] } }), results: () => [u1()] },
     {
-      filter: () => ({ $notIn: { id: [user2Id(), user2Id()] } }),
-      results: () => [user1Id(), user3Id()],
+      filter: () => ({ $notIn: { id: [u2(), u2()] } }),
+      results: () => [u1(), u3()],
     },
     {
-      filter: () => ({ $notIn: { id: [user1Id()], name: ['foo'] } }),
+      filter: () => ({ $notIn: { id: [u1()], name: ['foo'] } }),
       results: '[TODO] Return proper error',
     },
   ],
   $null: [
-    { filter: () => ({ $null: 'name' }), results: () => [user2Id()] },
+    { filter: () => ({ $null: 'name' }), results: () => [u2()] },
     { filter: () => ({ $null: 'id' }), results: () => [] },
     { filter: () => ({ $null: 'bar' }), results: 'bar' },
   ],
   $notNull: [
-    { filter: () => ({ $notNull: 'name' }), results: () => [user1Id(), user3Id()] },
-    { filter: () => ({ $notNull: 'id' }), results: () => [user1Id(), user2Id(), user3Id()] },
+    { filter: () => ({ $notNull: 'name' }), results: () => [u1(), u3()] },
+    { filter: () => ({ $notNull: 'id' }), results: () => [u1(), u2(), u3()] },
     { filter: () => ({ $notNull: 'bar' }), results: 'bar' },
   ],
   $between: [
     { filter: () => ({ $between: {} }), results: '[TODO] Return proper error' },
     {
-      filter: () => ({ $between: { id: { from: user1Id(), to: user2Id() } } }),
-      results: () => [user1Id(), user2Id()],
+      filter: () => ({ $between: { id: { from: u1(), to: u2() } } }),
+      results: () => [u1(), u2()],
     },
     {
       filter: () => ({ $between: { name: { from: 'a', to: 'z' } } }),
-      results: () => [user1Id(), user3Id()],
+      results: () => [u1(), u3()],
     },
     {
       filter: () => ({ $between: { age: { from: 20, to: 30 } } }),
-      results: () => [user2Id(), user3Id()],
+      results: () => [u2(), u3()],
     },
     {
-      filter: () => ({ $between: { id: { from: 0, to: user1Id() } } }),
-      results: () => [user1Id()],
+      filter: () => ({ $between: { id: { from: 0, to: u1() } } }),
+      results: () => [u1()],
     },
     {
-      filter: () => ({ $between: { id: { from: user3Id(), to: 4 } } }),
-      results: () => [user3Id()],
+      filter: () => ({ $between: { id: { from: u3(), to: 4 } } }),
+      results: () => [u3()],
     },
     {
-      filter: () => ({ $between: { id: { from: validId(), to: validId() } } }),
-      results: () => [validId()],
+      filter: () => ({ $between: { id: { from: uid(), to: uid() } } }),
+      results: () => [uid()],
     },
     { filter: () => ({ $between: { age: { from: 30, to: 40 } } }), results: () => [] },
-    { filter: () => ({ $between: { id: { from: user3Id(), to: user1Id() } } }), results: () => [] },
+    { filter: () => ({ $between: { id: { from: u3(), to: u1() } } }), results: () => [] },
     {
       filter: () => ({
-        $between: { id: { from: user1Id(), to: user3Id() }, name: { from: 'a', to: 'z' } },
+        $between: { id: { from: u1(), to: u3() }, name: { from: 'a', to: 'z' } },
       }),
       results: '[TODO] Return proper error',
     },
   ],
   $gt: [
     { filter: () => ({ $gt: {} }), results: '[TODO] Return proper error' },
-    { filter: () => ({ $gt: { id: user2Id() } }), results: () => [user3Id()] },
+    { filter: () => ({ $gt: { id: u2() } }), results: () => [u3()] },
     { filter: () => ({ $gt: { age: 21 } }), results: () => [] },
-    { filter: () => ({ $gt: { age: 20 } }), results: () => [user2Id(), user3Id()] },
-    { filter: () => ({ $gt: { id: 0 } }), results: () => [user1Id(), user2Id(), user3Id()] },
+    { filter: () => ({ $gt: { age: 20 } }), results: () => [u2(), u3()] },
+    { filter: () => ({ $gt: { id: 0 } }), results: () => [u1(), u2(), u3()] },
     {
-      filter: () => ({ $gt: { id: user1Id(), name: 'a' } }),
+      filter: () => ({ $gt: { id: u1(), name: 'a' } }),
       results: '[TODO] Return proper error',
     },
   ],
   $gte: [
     { filter: () => ({ $gte: {} }), results: '[TODO] Return proper error' },
-    { filter: () => ({ $gte: { id: user2Id() } }), results: () => [user2Id(), user3Id()] },
+    { filter: () => ({ $gte: { id: u2() } }), results: () => [u2(), u3()] },
     { filter: () => ({ $gte: { name: 'z' } }), results: () => [] },
-    { filter: () => ({ $gte: { age: 21 } }), results: () => [user2Id(), user3Id()] },
-    { filter: () => ({ $gte: { name: 'a' } }), results: () => [user1Id(), user3Id()] },
-    { filter: () => ({ $gte: { id: 0 } }), results: () => [user1Id(), user2Id(), user3Id()] },
+    { filter: () => ({ $gte: { age: 21 } }), results: () => [u2(), u3()] },
+    { filter: () => ({ $gte: { name: 'a' } }), results: () => [u1(), u3()] },
+    { filter: () => ({ $gte: { id: 0 } }), results: () => [u1(), u2(), u3()] },
     { filter: () => ({ $gte: { age: 30 } }), results: () => [] },
     {
-      filter: () => ({ $gte: { id: user1Id(), name: 'a' } }),
+      filter: () => ({ $gte: { id: u1(), name: 'a' } }),
       results: '[TODO] Return proper error',
     },
   ],
   $lt: [
     { filter: () => ({ $lt: {} }), results: '[TODO] Return proper error' },
-    { filter: () => ({ $lt: { id: user2Id() } }), results: () => [user1Id()] },
+    { filter: () => ({ $lt: { id: u2() } }), results: () => [u1()] },
     { filter: () => ({ $lt: { name: 'bar' } }), results: () => [] },
-    { filter: () => ({ $lt: { name: 'z' } }), results: () => [user1Id(), user3Id()] },
-    { filter: () => ({ $lt: { age: 30 } }), results: () => [user1Id(), user2Id(), user3Id()] },
+    { filter: () => ({ $lt: { name: 'z' } }), results: () => [u1(), u3()] },
+    { filter: () => ({ $lt: { age: 30 } }), results: () => [u1(), u2(), u3()] },
     { filter: () => ({ $lt: { id: 0 } }), results: () => [] },
     {
-      filter: () => ({ $lt: { id: user1Id(), name: 'z' } }),
+      filter: () => ({ $lt: { id: u1(), name: 'z' } }),
       results: '[TODO] Return proper error',
     },
   ],
   $lte: [
     { filter: () => ({ $lte: {} }), results: '[TODO] Return proper error' },
-    { filter: () => ({ $lte: { id: user2Id() } }), results: () => [user1Id(), user2Id()] },
-    { filter: () => ({ $lte: { name: 'bar' } }), results: () => [user3Id()] },
-    { filter: () => ({ $lte: { age: 21 } }), results: () => [user1Id(), user2Id(), user3Id()] },
-    { filter: () => ({ $lte: { name: 'z' } }), results: () => [user1Id(), user3Id()] },
-    { filter: () => ({ $lte: { age: 30 } }), results: () => [user1Id(), user2Id(), user3Id()] },
+    { filter: () => ({ $lte: { id: u2() } }), results: () => [u1(), u2()] },
+    { filter: () => ({ $lte: { name: 'bar' } }), results: () => [u3()] },
+    { filter: () => ({ $lte: { age: 21 } }), results: () => [u1(), u2(), u3()] },
+    { filter: () => ({ $lte: { name: 'z' } }), results: () => [u1(), u3()] },
+    { filter: () => ({ $lte: { age: 30 } }), results: () => [u1(), u2(), u3()] },
     { filter: () => ({ $lte: { id: 0 } }), results: () => [] },
     {
-      filter: () => ({ $lte: { id: user1Id(), name: 'z' } }),
+      filter: () => ({ $lte: { id: u1(), name: 'z' } }),
       results: '[TODO] Return proper error',
     },
   ],
   $raw: [
     {
-      filter: () => ({ $raw: { $query: 'id = ?', $bindings: validId() } }),
-      results: () => [validId()],
+      filter: () => ({ $raw: { $query: 'id = ?', $bindings: [uid()] } }),
+      results: () => [uid()],
     },
     {
-      filter: () => ({ $raw: { $query: 'id = :id', $bindings: { id: validId() } } }),
-      results: () => [validId()],
+      filter: () => ({ $raw: { $query: 'id = :id', $bindings: { id: uid() } } }),
+      results: () => [uid()],
     },
   ],
 };
@@ -666,7 +666,7 @@ describe('KnexConnector', () => {
 
   //           context('with queryfor data', {
   //             definitions() {
-  //               id = validId;
+  //               id = uid;
   //             },
   //             tests() {
   //               it('promises array of rows', async () => {
