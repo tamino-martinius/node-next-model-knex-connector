@@ -270,9 +270,18 @@ export class KnexConnector implements Connector {
     keys: Dict<KeyType>,
     items: Dict<any>[],
   ): Promise<Dict<any>[]> {
+    const primaryKey = Object.keys(keys)[0];
     const table = this.table(tableName);
-    const rows = await table.insert(items).returning(`${tableName}.*`);
-    return rows as Dict<any>[];
+    const idsOrRows = await table.insert(items).returning(`${tableName}.*`);
+    if (idsOrRows.length > 0 && typeof idsOrRows[0] === 'number') {
+      const rows = (await this.table(tableName)
+        .whereIn(primaryKey, idsOrRows)
+        .select('*')) as Dict<any>[];
+      const rowDict: Dict<Dict<any>> = {};
+      rows.map(row => (rowDict[row[primaryKey]] = row));
+      return idsOrRows.map(id => rowDict[id]);
+    }
+    return idsOrRows;
   }
 
   async execute(query: string, bindings: BaseType | BaseType[]): Promise<any[]> {
