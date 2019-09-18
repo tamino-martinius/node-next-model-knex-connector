@@ -6,8 +6,6 @@ import { KnexConnector } from '..';
 
 import { context, Connection, FilterSpecGroup, randomInteger } from '.';
 
-import * as faker from 'faker';
-
 const client = process.env.DB || 'sqlite3';
 const isOracle = client === 'oracledb';
 let connection: Connection = { filename: ':memory:' };
@@ -110,7 +108,7 @@ const users: (() => number)[] = [
   () => (user1 ? user1.attributes.id : 0),
   () => (user2 ? user2.attributes.id : 0),
   () => (user3 ? user3.attributes.id : 0),
-  () => randomInteger(user3 ? user3.attributes.id + 1 : 0, Number.MAX_SAFE_INTEGER),
+  () => randomInteger(user3 ? user3.attributes.id + 1 : 0, 99999),
 ];
 
 const filterSpecGroups: FilterSpecGroup = {
@@ -155,7 +153,7 @@ const filterSpecGroups: FilterSpecGroup = {
   ],
   $and: [
     {
-      //
+      // Filter with empty
       filter: () => ({ $and: [] }),
       results: () => [users[1](), users[2](), users[3]()],
     },
