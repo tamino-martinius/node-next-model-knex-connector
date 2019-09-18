@@ -1,13 +1,11 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 try {
     const pg = require('pg');
     pg.types.setTypeParser(20, 'text', parseInt);
 }
 catch (e) { }
-const Knex = require("knex");
-const core_1 = require("@next-model/core");
-class KnexConnector {
+import * as Knex from 'knex';
+import { SortDirection, } from '@next-model/core';
+export class KnexConnector {
     constructor(options) {
         this.knex = Knex(options);
     }
@@ -198,7 +196,7 @@ class KnexConnector {
     async query(scope) {
         let { query } = await this.collection(scope);
         for (const order of scope.order || []) {
-            const direction = order.dir === core_1.SortDirection.Asc ? 'asc' : 'desc';
+            const direction = order.dir === SortDirection.Asc ? 'asc' : 'desc';
             query = query.orderBy(order.key, direction);
         }
         try {
@@ -222,7 +220,7 @@ class KnexConnector {
     async select(scope, ...keys) {
         let { query } = await this.collection(scope);
         for (const order of scope.order || []) {
-            const direction = order.dir === core_1.SortDirection.Asc ? 'asc' : 'desc';
+            const direction = order.dir === SortDirection.Asc ? 'asc' : 'desc';
             query = query.orderBy(order.key, direction);
         }
         try {
@@ -270,5 +268,4 @@ class KnexConnector {
         }
     }
 }
-exports.KnexConnector = KnexConnector;
-exports.default = KnexConnector;
+export default KnexConnector;
