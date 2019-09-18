@@ -292,10 +292,10 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^13.0.0"
 
-"@next-model/core@^1.0.0-alpha.26":
-  version "1.0.0-alpha.26"
-  resolved "https://registry.yarnpkg.com/@next-model/core/-/core-1.0.0-alpha.26.tgz#3f0a89ca3a4d200fe74447c37b208bb5ed554ee3"
-  integrity sha512-YrtO64apSXuU68ckd2B/hVKeZhBtAQmtrGoJc7So9IWEpEupOakeBzdhB43Qz5RX/c/9LLJ2qm4pW3sbUzqSEw==
+"@next-model/core@^1.0.0-alpha.29":
+  version "1.0.0-alpha.29"
+  resolved "https://registry.yarnpkg.com/@next-model/core/-/core-1.0.0-alpha.29.tgz#ecde2d1a1eb16c98d8e9a868094e93f271aa5087"
+  integrity sha512-L/t5wJIjjX2vEjhYAdLccG3OqAd0rgK7uZraFJsp2PZTOjJtAeO5B2b8BytlyHm9aaNEZG8+vQjzEa2j1NbMVA==
 
 "@types/babel__core@^7.1.0":
   version "7.1.3"
