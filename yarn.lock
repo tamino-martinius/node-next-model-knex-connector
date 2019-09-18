@@ -292,10 +292,10 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^13.0.0"
 
-"@next-model/core@^1.0.0-alpha.29":
-  version "1.0.0-alpha.29"
-  resolved "https://registry.yarnpkg.com/@next-model/core/-/core-1.0.0-alpha.29.tgz#ecde2d1a1eb16c98d8e9a868094e93f271aa5087"
-  integrity sha512-L/t5wJIjjX2vEjhYAdLccG3OqAd0rgK7uZraFJsp2PZTOjJtAeO5B2b8BytlyHm9aaNEZG8+vQjzEa2j1NbMVA==
+"@next-model/core@^1.0.0-alpha.30":
+  version "1.0.0-alpha.30"
+  resolved "https://registry.yarnpkg.com/@next-model/core/-/core-1.0.0-alpha.30.tgz#153e52cda8a8beae8bd865c700a0801c4e73f940"
+  integrity sha512-ARYvPxXXTVIJEcyU7ZlRdGMzCUM6C5CwuEYp7qkReskUrAwzHPxhK88waaghLl54P/E0GD7WZTaEMsG41EAgIw==
 
 "@types/babel__core@^7.1.0":
   version "7.1.3"
@@ -3869,6 +3869,11 @@ ts-jest@^24.0.2:
     resolve "1.x"
     semver "^5.5"
     yargs-parser "10.x"
+
+ts-mjs@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/ts-mjs/-/ts-mjs-3.1.0.tgz#01005a10961a8960557dacb78f8211462e368547"
+  integrity sha512-tykMzPeRz1hFDjXHtmFj5xEt5o6ZTF3Equ7l/JQxfiPTRGhpYz7XkICqZQwKHmRxP9hKYiVSpWO84/RtT8EbMw==
 
 tunnel-agent@^0.6.0:
   version "0.6.0"

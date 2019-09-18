@@ -5,8 +5,8 @@
   "author": "Tamino Martinius <dev@zaku.eu>",
   "license": "MIT",
   "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "jsnext:main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "jsnext:main": "./dist/index.mjs",
   "typings": "./dist/index.d.ts",
   "repository": {
     "type": "git",
@@ -20,7 +20,7 @@
     "test": "jest",
     "watch": "tsc -w",
     "ci": "npm run coverage && codecov",
-    "compile": "rm -rf dist/* && tsc",
+    "compile": "rm -rf dist/* && tsc && tsc-mjs --declaration false --target esnext --module esnext --mjs",
     "preversion": "npm run compile && git add ."
   },
   "devDependencies": {
@@ -34,6 +34,7 @@
     "faker": "^4.1.0",
     "jest": "^24.9.0",
     "ts-jest": "^24.0.2",
+    "ts-mjs": "^3.1.0",
     "typescript": "^3.6.3",
     "sqlite3": "^4.1.0"
   },
