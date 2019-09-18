@@ -156,7 +156,7 @@ export class KnexConnector implements Connector {
 
   private async rawFilter(query: Knex.QueryBuilder, filter: FilterRaw) {
     return {
-      query: query.whereRaw(filter.$query, filter.$bindings),
+      query: query.whereRaw(filter.$query, filter.$bindings || []),
     };
   }
 
