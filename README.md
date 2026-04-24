@@ -1,3 +1,6 @@
+> [!WARNING]
+> This package is deprecated and has been moved to the [`node-next-model` monorepo](https://github.com/tamino-martinius/node-next-model) for v1 and later versions.
+
 # KnexConnector
 
 SQL connector for [NextModel](https://github.com/tamino-martinius/node-next-model) package using [Knex](http://knexjs.org/). [![Build Status](https://travis-ci.org/tamino-martinius/node-next-model-knex-connector.svg?branch=master)](https://travis-ci.org/tamino-martinius/node-next-model-knex-connector)
